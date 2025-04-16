@@ -1,0 +1,62 @@
+#layoutHeader {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0px -2px 20px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255,255,255,0.8);
+    backdrop-filter: blur(1.5px);
+}
+#layoutHeader > #layoutHeaderMain{
+    display: flex;
+    justify-content: space-between;
+    max-width: 1072px;
+    min-width: 500px;
+    width: 1072px;
+    background-color: none;
+}
+
+#layoutHeader > #layoutHeaderMain > *{
+    margin: 0 10px;
+}
+
+#layoutHeader .ant-menu-light{
+    background: none;
+}
+
+#layoutHeaderMenu{
+    display: flex;
+    justify-content: flex-end;
+}
+
+#layoutContent{
+    display: flex;
+    justify-content: center;
+}
+
+#layoutContentMiddle{
+    max-width: 1048px;
+    width: 1048px;
+    min-width: 500px;
+    margin: 15px 10px;
+}
+
+#layoutFooter{
+    box-shadow: 0px -2px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+.logo{
+    display: flex;
+    flex-direction: row;   /*设置主轴方向是水平方向*/
+    align-items: center;
+}
+
+.ant-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+}
