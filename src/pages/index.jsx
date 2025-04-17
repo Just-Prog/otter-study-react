@@ -13,11 +13,11 @@ function NavBarRight() {
     console.log(e)
   }
   const logout = () => {
-    changeLoginStatus(false)
+    // changeLoginStatus(false)
   };
   const onButtonClicked = () => {
-    // nav("/user/login");
-    changeLoginStatus(true);
+    nav("/user/login");
+    // changeLoginStatus(true);
   };
   const dropdownItems = [
     {
