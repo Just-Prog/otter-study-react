@@ -1,45 +1,57 @@
-import { useState } from 'react';
-import { Avatar, Layout, Menu, Dropdown, Button } from 'antd';
+import { useState } from "react";
+import { Avatar, Layout, Menu, Dropdown, Button } from "antd";
 const { Header, Content, Footer } = Layout;
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
-import './index.css';
+import "./index.css";
+import AntdMenuHyperLink from "@/components/common/antd_menu_hyperlink";
 
-var isLoggedIn = false;
 function NavBarRight() {
+  var [isLoggedIn, changeLoginStatus] = useState(false);
   const nav = useNavigate();
-  const onButtonClicked = () => {
-    nav("/user/login");
+  const handleClick = (e) => {
+    console.log(e)
   }
+  const logout = () => {
+    changeLoginStatus(false)
+  };
+  const onButtonClicked = () => {
+    // nav("/user/login");
+    changeLoginStatus(true);
+  };
   const dropdownItems = [
     {
-      key: "/",
-      label: "登出",
+      key: "#logout",
+      label: (
+        <AntdMenuHyperLink onClick={() => logout()}>登出</AntdMenuHyperLink>
+      ),
     },
   ];
   const dropdownMenuProps = {
-    items: dropdownItems
-  }
+    items: dropdownItems,
+  };
   if (isLoggedIn)
-    return <Dropdown
-      trigger={["click", "hover"]}
-      placement="bottom"
-      arrow={true}
-      menu={dropdownMenuProps}
-    >
-      {/*<Avatar src={default_avatar}></Avatar>*/}
-      <Avatar src="/assets/avatar/default.svg"></Avatar>
-    </Dropdown>
+    return (
+      <Dropdown
+        trigger={["click", "hover"]}
+        placement="bottom"
+        arrow={true}
+        menu={dropdownMenuProps}
+        onClick={handleClick}
+      >
+        {/*<Avatar src={default_avatar}></Avatar>*/}
+        <Avatar src="/assets/avatar/default.svg"></Avatar>
+      </Dropdown>
+    );
   else
     return (
-      <Button color="default" type="primary" onClick={()=>onButtonClicked()}>
+      <Button color="default" type="primary" onClick={() => onButtonClicked()}>
         登录/注册
       </Button>
-    )
+    );
 }
 
 function IndexPage() {
-
   const [current, setCurrent] = useState("/");
   const onClick = (e) => {
     setCurrent(e.key);
@@ -48,7 +60,7 @@ function IndexPage() {
     {
       key: "/",
       label: "首页",
-    }
+    },
   ];
 
   return (
