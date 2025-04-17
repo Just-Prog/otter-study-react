@@ -1,15 +1,17 @@
-import Axios from 'axios'
+import Axios from "axios";
 
 const api = Axios.create({
-    baseURL: import.meta.env.REACT_APP_API_URL,
+  baseURL: import.meta.env.VITE_REACT_APP_API_URL,
 });
 
-api.interceptors.request.use(config => {
-    console.log(config);
-})
+api.interceptors.request.use((config) => {
+  config.headers["X-AppVer"] = "pc:teaching:pc:3.0-1";
+  return config;
+});
 
-api.interceptors.response.use(config => {
-    console.log(config);
-})
+api.interceptors.response.use((config) => {
+  console.log(config);
+  return config;
+});
 
 export default api;

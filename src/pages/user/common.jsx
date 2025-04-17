@@ -56,7 +56,7 @@ const UserPageCommon = ({ children }) => {
                   justifyContent: "center",
                 }}
               >
-                Copyright
+                <span>OtterStudy UserCenter</span>
               </Footer>
             </Layout>
           </div>
