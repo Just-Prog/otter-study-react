@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import "./index.css";
 import AntdMenuHyperLink from "@/components/common/antd_menu_hyperlink";
 
+import default_avatar from "@/assets/avatar/default.svg";
+import logo from "@/assets/logo.png";
+
 function NavBarRight() {
   var [isLoggedIn, changeLoginStatus] = useState(false);
   const nav = useNavigate();
@@ -39,8 +42,7 @@ function NavBarRight() {
         menu={dropdownMenuProps}
         onClick={handleClick}
       >
-        {/*<Avatar src={default_avatar}></Avatar>*/}
-        <Avatar src="/assets/avatar/default.svg"></Avatar>
+        <Avatar src={default_avatar}></Avatar>
       </Dropdown>
     );
   else
@@ -68,7 +70,7 @@ function IndexPage() {
       <Header id="layoutHeader">
         <div id="layoutHeaderMain">
           <div className="logo">
-            <img src="/assets/logo.png" height="52" />
+            <img src={logo} height="52" />
           </div>
           <div id="layoutHeaderMenu" style={{ flex: 1 }}>
             <Menu

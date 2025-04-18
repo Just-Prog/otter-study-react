@@ -3,6 +3,8 @@ import { Layout } from "antd";
 const { Header, Content, Footer } = Layout;
 import "./common.css";
 
+import logo from "@/assets/logo.png";
+
 const UserPageCommon = ({ children }) => {
   return (
     <>
@@ -21,7 +23,7 @@ const UserPageCommon = ({ children }) => {
                   alignItems: "center",
                 }}
               >
-                <img src="/assets/logo.png" height={56} />
+                <img src={logo} height={56} />
                 <span>
                   <b style={{fontSize: '22px'}}>用户系统</b>
                 </span>
