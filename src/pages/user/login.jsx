@@ -2,13 +2,15 @@ import { Form, Input, Tabs, Button, Card, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useRef, useState, useEffect } from "react";
 
+import CryptoJS from 'crypto-js';
+
 import UserPageCommon from "./common";
 import api from "@/api/api";
-import { useNavigate } from "react-router-dom";
 
-import history from "@/utils/router_history";
+import './login.css'
+import {useNavigate} from "react-router-dom";
 
-const tokenFetch = (xCode) => {
+const tokenFetch = async (xCode) => {
   let code = JSON.parse(xCode);
   let u_code = code.code;
   let uid = code.uid;
@@ -17,19 +19,43 @@ const tokenFetch = (xCode) => {
   }}).then(_=>{
     localStorage.setItem("token",_.headers['x-token']);
     localStorage.setItem('macKey',_.headers['x-mackey']);
-    history.push('/#/');
   });
 }
 
 const UserPasswordLoginForm = () => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
   const rid = useRef("");
   const forgetPwd = () => {
     messageApi.info("维护中");
   };
   const onFinish = (_) => {
-    console.log(_)
+    let uid = form.getFieldValue().username;
+    api.post("/uc/v1/users/pwd-login/init",{
+      username: uid
+    }).then((_) => {
+      rid.current = _.data.rid
+      let password = form.getFieldValue().password;
+      password = CryptoJS.MD5(password).toString();
+      password = CryptoJS.HmacSHA256(password,rid.current);
+      password = CryptoJS.enc.Base64.stringify(password)
+        .replace(/\+/g, "-")
+        .replace(/=/g, "")
+        .replace(/\//g, "_");
+
+      api
+        .post("/uc/v2/users/pwd-login", {
+          rid: rid.current,
+          username: uid,
+          password: password,
+        })
+        .then((_) => {
+          tokenFetch(_.headers["x-code"]).then(()=>{
+            navigate("/")
+          });
+        });
+    });
   };
   return (
     <>
@@ -84,6 +110,7 @@ const UserPasswordLoginForm = () => {
 const UserSMSLoginForm = () => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
   const rid = useRef("");
   const [verifyCodeStatus, updateVerifyStatus] = useState(false);
   const [count, setCount] = useState(60);
@@ -106,14 +133,14 @@ const UserSMSLoginForm = () => {
   }
   useEffect(()=>{
     console.log(count)
-    if(count == 0){
+    if(count === 0){
       clearInterval(countdown.current)
       countdown.current = null;
       setCount(60)
       updateVerifyStatus(false);
     }
   },[count])
-  const onFinish = (_) => {
+  const onFinish = () => {
     api
       .post("/uc/teaching/v1/auto-login", {
         phone: form.getFieldValue().phone,
@@ -121,9 +148,9 @@ const UserSMSLoginForm = () => {
         smsCode: form.getFieldValue().smsCode,
       })
       .then((_) => {
-        tokenFetch(_.headers['x-code']);
-      }).catch(_=>{
-        console.log(_);
+        tokenFetch(_.headers['x-code']).then(()=>{
+          navigate("/")
+        });
       });
   };
   return (

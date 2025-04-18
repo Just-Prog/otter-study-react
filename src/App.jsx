@@ -1,13 +1,13 @@
 import { RouterProvider } from "react-router";
-import { ConfigProvider } from 'antd';
+import { ConfigProvider } from "antd";
 
-import router from './router/router.jsx';
-
-const App = () => {
-    return (
-        <ConfigProvider>
-            <RouterProvider router={router} />
-        </ConfigProvider>
-    );
+import router from '@/router/router.jsx';
+import { useEffect } from "react";
+const app = () => {
+  return (
+    <ConfigProvider>
+      <RouterProvider router={router} />
+    </ConfigProvider>
+  );
 };
-export default App;
+export default app;
