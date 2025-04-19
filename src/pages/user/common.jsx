@@ -1,5 +1,5 @@
 import DoubleColumn from "@/layouts/double_column.jsx";
-import { Layout } from "antd";
+import {Col, Layout, Row} from "antd";
 const { Header, Content, Footer } = Layout;
 import "./common.css";
 
@@ -31,24 +31,13 @@ const UserPageCommon = ({ children }) => {
               <Content
                 style={{
                   overflow: "auto",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
                 }}
               >
-                <div
-                  style={{
-                    width: "70%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    height: "calc(100vh - 144px)",
-                  }}
-                >
-                  {children}
-                </div>
+              <Row justify="center" align="middle" style={{height: "calc(100vh - 144px)"}}>
+                  <Col xs={22} md={20} lg={18}>
+                      {children}
+                  </Col>
+              </Row>
               </Content>
               <Footer
                 className="user_right_footer"

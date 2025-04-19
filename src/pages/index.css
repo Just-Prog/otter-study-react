@@ -13,7 +13,7 @@
     display: flex;
     justify-content: space-between;
     max-width: 1072px;
-    min-width: 500px;
+    min-width: 360px;
     width: 1072px;
     background-color: none;
 }
@@ -39,7 +39,7 @@
 #layoutContentMiddle{
     max-width: 1048px;
     width: 1048px;
-    min-width: 500px;
+    min-width: 360px;
     margin: 15px 10px;
 }
 
