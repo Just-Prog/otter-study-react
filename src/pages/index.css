@@ -23,6 +23,12 @@
     margin: 0 10px;
 }
 
+#layoutHeader > #layoutHeaderMain > #layoutAvatar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #layoutHeader .ant-menu-light{
     background: none;
 }

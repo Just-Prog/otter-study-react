@@ -125,10 +125,9 @@ function IndexPage() {
           <IndexFrame>
             <Row>
               <Col xs={24} lg={12}>
-                111
               </Col>
               <Col xs={0} lg={12}>
-                <UserLoginCard style={{background: "linear-gradient(180deg, rgba(55, 120, 252, 0.15), white 60%)", width: "100%"}}/>
+                <UserLoginCard style={{background: "linear-gradient(180deg, rgba(55, 120, 252, 0.15), white 60%)", width: "100%", position: "sticky", top: "79px"}}/> {/* 79px=header(64px)+margin-top(15px) */}
               </Col>
             </Row>
           </IndexFrame>
