@@ -1,39 +1,42 @@
 import { useState } from "react";
-import { Avatar, Layout, Menu, Dropdown, Button } from "antd";
+import {Avatar, Layout, Menu, Dropdown, Button, Row, Col, Carousel} from "antd";
 const { Header, Content, Footer } = Layout;
 import { useNavigate } from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
 
 import "./index.css";
 import AntdMenuHyperLink from "@/components/common/antd_menu_hyperlink";
 
 import default_avatar from "@/assets/avatar/default.svg";
 import logo from "@/assets/logo.png";
+import {UserLoginCard} from "@/pages/user/login.jsx";
+import { logout } from '@/stores/user.jsx';
 
 function NavBarRight() {
-  var [isLoggedIn, changeLoginStatus] = useState(false);
+  const isLogined = useSelector(state => state.user.isLogined);
+  const dispatch = useDispatch();
   const nav = useNavigate();
   const handleClick = (e) => {
     console.log(e)
   }
-  const logout = () => {
-    // changeLoginStatus(false)
+  const logoutAction = () => {
+    dispatch(logout());
   };
   const onButtonClicked = () => {
     nav("/user/login");
-    // changeLoginStatus(true);
   };
   const dropdownItems = [
     {
       key: "#logout",
       label: (
-        <AntdMenuHyperLink onClick={() => logout()}>登出</AntdMenuHyperLink>
+        <AntdMenuHyperLink onClick={() => logoutAction()}>登出</AntdMenuHyperLink>
       ),
     },
   ];
   const dropdownMenuProps = {
     items: dropdownItems,
   };
-  if (isLoggedIn)
+  if (isLogined)
     return (
       <Dropdown
         trigger={["click", "hover"]}
@@ -86,7 +89,16 @@ function IndexPage() {
         </div>
       </Header>
       <Content id="layoutContent">
-        <div id="layoutContentMiddle"></div>
+        <div id="layoutContentMiddle">
+          <Row>
+            <Col xs={24} lg={12}>
+              {/*<Carousel/>*/}111
+            </Col>
+            <Col xs={0} lg={12}>
+              <UserLoginCard style={{background: "linear-gradient(180deg, rgba(55, 120, 252, 0.15), white 60%)", width: "100%"}}/>
+            </Col>
+          </Row>
+        </div>
       </Content>
       <Footer id="layoutFooter">
         <div id="layoutFooterMain">

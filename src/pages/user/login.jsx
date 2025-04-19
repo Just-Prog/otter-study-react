@@ -1,6 +1,8 @@
 import { Form, Input, Tabs, Button, Card, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import userStore, {setToken} from "@/stores/user"
 
 import CryptoJS from 'crypto-js';
 
@@ -8,7 +10,6 @@ import UserPageCommon from "./common";
 import api from "@/api/api";
 
 import './login.css'
-import {useNavigate} from "react-router-dom";
 
 const tokenFetch = async (xCode) => {
   let code = JSON.parse(xCode);
@@ -17,8 +18,10 @@ const tokenFetch = async (xCode) => {
   api.get("/uc/v1/users/token",{params: {
     code: u_code,uid: uid
   }}).then(_=>{
-    localStorage.setItem("token",_.headers['x-token']);
-    localStorage.setItem('macKey',_.headers['x-mackey']);
+    userStore.dispatch(setToken({
+      token: _.headers['x-token'],
+      macKey: _.headers['x-mackey']
+    }));
   });
 }
 
@@ -213,15 +216,10 @@ const UserSMSLoginForm = () => {
   );
 };
 
-const UserLoginPage = () => {
+const UserLoginCard = ({style}) => {
   return (
-    <>
-      <UserPageCommon>
-        <div style={{ textAlign: "left", width: "100%" }}>
-          <h1>登录</h1>
-        </div>
-        <Card style={{ width: "100%" }}>
-          <Tabs
+      <Card style={style}>
+        <Tabs
             defaultActiveKey="1"
             items={[
               {
@@ -235,11 +233,24 @@ const UserLoginPage = () => {
                 children: <UserPasswordLoginForm />,
               },
             ]}
-          />
-        </Card>
+        />
+      </Card>
+  );
+}
+
+const UserLoginPage = () => {
+  return (
+    <>
+      <UserPageCommon>
+        <div style={{ textAlign: "left", width: "100%" }}>
+          <h1>登录</h1>
+        </div>
+        <UserLoginCard style={{width: "100%"}}/>
       </UserPageCommon>
     </>
   );
 };
 
 export default UserLoginPage;
+
+export { UserLoginCard }
