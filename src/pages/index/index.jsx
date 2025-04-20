@@ -14,6 +14,7 @@ import {MenuOutlined} from "@ant-design/icons";
 import {useState} from "react";
 import TenantCarousel from "@/components/index/tenant_carousel.jsx";
 import IndexNewsList from "@/components/index/news_list.jsx";
+import IndexThreeNews from "@/components/index/three_news.jsx";
 
 function NavBarRight({ inDrawer = false }) {
   const isLogined = useSelector(state => state.user.isLogined);
@@ -140,7 +141,13 @@ function IndexPage() {
   else return (
       <>
         <IndexFrame>
-          constructing
+          <Row gutter={{ xs: 4, lg: 24}}>
+            <Col xs={24} lg={12}>
+              <TenantCarousel/>
+              <IndexThreeNews/>
+            </Col>
+            <Col xs={0} lg={12}></Col>
+          </Row>
         </IndexFrame>
       </>
   );
