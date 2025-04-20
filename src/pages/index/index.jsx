@@ -12,6 +12,8 @@ import {UserLoginCard} from "@/pages/user/login.jsx";
 import { logout } from '@/stores/user.jsx';
 import {MenuOutlined} from "@ant-design/icons";
 import {useState} from "react";
+import TenantCarousel from "@/components/index/tenant_carousel.jsx";
+import IndexNewsList from "@/components/index/news_list.jsx";
 
 function NavBarRight({ inDrawer = false }) {
   const isLogined = useSelector(state => state.user.isLogined);
@@ -123,8 +125,10 @@ function IndexPage() {
     return (
         <>
           <IndexFrame>
-            <Row>
+            <Row gutter={{ xs: 4, lg: 24}}>
               <Col xs={24} lg={12}>
+                <TenantCarousel/>
+                <IndexNewsList/>
               </Col>
               <Col xs={0} lg={12}>
                 <UserLoginCard style={{background: "linear-gradient(180deg, rgba(55, 120, 252, 0.15), white 60%)", width: "100%", position: "sticky", top: "79px"}}/> {/* 79px=header(64px)+margin-top(15px) */}
