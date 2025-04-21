@@ -14,11 +14,11 @@ const userStore = createSlice({
       state.info = parseJwt(state.token) || {};
       localStorage.setItem("token", action.payload.token);
       localStorage.setItem("macKey", action.payload.macKey);
-      state.isLogined = state.macKey !== "" && state.token !== "";
+      state.isLogined = state.macKey !== "" && state.token !== "" && JSON.stringify(state.info) != "{}";
       console.log(state.info);
     },
     checkLoginStatus(state) {
-      state.isLogined = state.macKey !== "" && state.token !== "";
+      state.isLogined = state.macKey !== "" && state.token !== "" && JSON.stringify(state.info) != "{}";
     },
     logout(state) {
       state.isLogined = false;
