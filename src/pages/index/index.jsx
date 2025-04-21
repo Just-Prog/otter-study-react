@@ -74,7 +74,13 @@ function NavBarRight({ inDrawer = false }) {
 
 function IndexFrame({children}) {
   const isLogined = useSelector(state => state.user.isLogined);
-  const tenant = useSelector((state) => state.user.info?.tenants[0]?.tenantId);
+  const tenant = useSelector((state) => {
+    try {
+      return state.user.info.tenants[0].tenantId;
+    } catch (e) {
+      return null;
+    }
+  });
   const [open, setOpen] = useState(false);
   const openDrawer = () => {
     setOpen(true);
@@ -127,7 +133,13 @@ function IndexFrame({children}) {
 
 function IndexPage() {
   const isLogined = useSelector(state => state.user.isLogined);
-  const tenant = useSelector((state) => state.user.info?.tenants[0]?.tenantId);
+  const tenant = useSelector((state) => {
+    try{
+      return state.user.info.tenants[0].tenantId;
+    }catch(e){
+      return null;
+    }
+  });
   if (!isLogined)
     return (
         <>
