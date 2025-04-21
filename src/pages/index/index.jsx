@@ -1,7 +1,7 @@
-import {Avatar, Layout, Menu, Dropdown, Button, Row, Col, Carousel, Drawer} from "antd";
+import {Avatar, Layout, Menu, Dropdown, Button, Row, Col, Carousel, Drawer, Card} from "antd";
 const { Header, Content, Footer, Sider } = Layout;
 import { useNavigate } from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector, useStore} from "react-redux";
 
 import "./index.css";
 import AntdMenuHyperLink from "@/components/common/antd_menu_hyperlink";
@@ -74,6 +74,7 @@ function NavBarRight({ inDrawer = false }) {
 
 function IndexFrame({children}) {
   const isLogined = useSelector(state => state.user.isLogined);
+  const tenant = useSelector((state) => state.user.info?.tenants[0]?.tenantId);
   const [open, setOpen] = useState(false);
   const openDrawer = () => {
     setOpen(true);
@@ -83,7 +84,7 @@ function IndexFrame({children}) {
   }
   return (
       <Layout>
-        { isLogined && <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff"}} width="240px">
+        { isLogined && tenant && <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff"}} width="240px">
           <TenantSwitcher />
         </Sider> }
         <Layout id="layoutMain">
@@ -126,6 +127,7 @@ function IndexFrame({children}) {
 
 function IndexPage() {
   const isLogined = useSelector(state => state.user.isLogined);
+  const tenant = useSelector((state) => state.user.info?.tenants[0]?.tenantId);
   if (!isLogined)
     return (
         <>
@@ -150,7 +152,11 @@ function IndexPage() {
               <TenantCarousel/>
               <IndexThreeNews/>
             </Col>
-            <Col xs={0} lg={12}></Col>
+            <Col xs={24} lg={12}>
+              { tenant ? null : <Card title={"选择租户"}>
+                <TenantSwitcher isMenu={true} />
+              </Card> }
+            </Col>
           </Row>
         </IndexFrame>
       </>

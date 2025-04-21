@@ -1,26 +1,44 @@
-import { Dropdown } from "antd";
-import {useEffect, useState} from "react";
+import { Dropdown, Menu } from "antd";
+import { useEffect, useState } from "react";
 
 import api from "@/api/api";
-import {useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { CaretDownOutlined } from "@ant-design/icons";
+import { switchTenant } from "@/stores/user"
 
-export default function TenantSwitcher(){
+export default function TenantSwitcher({ isMenu = false }){
     const isLogined = useSelector(state => state.user.isLogined);
     const [tenants, setTenants] = useState([]);
-    const [current, setCurrent] = useState("");
+    const current = useSelector(state => state.user.info?.tenants[0]?.tenantName ?? "未选取租户")
+    const dispatch = useDispatch();
     const fetchTenantList = async () => {
-        let resp = api.get('/uc/v1/users/tenants');
+        let resp = await api.get('/uc/v1/users/tenants');
         setTenants(resp.data);
     }
+    let items = tenants.map(i=>{
+        return {
+          key: i.tenantId,
+          label: <div>{i.tenantName}</div>,
+        };
+    });
+    let menuProps = {
+        items: items,
+        onClick: (e)=>{
+            dispatch(switchTenant(e.key));
+        },
+    };
     useEffect(() => {
-        setCurrent(localStorage.getItem("tenant_target") || "");
         fetchTenantList();
     }, [isLogined]);
+    if(isMenu){
+        return <Menu items={items} selectable={false} onClick={menuProps.onClick} />;
+    }
     return (
-        <>
-            <Dropdown menu={{ tenants }}>
-                <div>{current}</div>
-            </Dropdown>
-        </>
+      <Dropdown menu={menuProps}>
+        <span>
+          <span>{current}</span>
+          <CaretDownOutlined />
+        </span>
+      </Dropdown>
     );
 }
