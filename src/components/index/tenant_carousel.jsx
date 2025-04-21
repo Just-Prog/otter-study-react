@@ -2,8 +2,10 @@ import {useEffect, useState} from 'react'
 import { Carousel } from 'antd'
 
 import api from '@/api/api.jsx'
+import {useSelector} from "react-redux";
 
 export default function TenantCarousel(){
+    const isLogined = useSelector(state => state.user.isLogined);
     const [data, setData] = useState([]);
     const fetchCarouselData = async() => {
         let resp = await api.get("/tac/home-page/mngCarousels",{params: {
@@ -19,7 +21,7 @@ export default function TenantCarousel(){
     }
     useEffect(() => {
         fetchCarouselData();
-    },[])
+    },[isLogined])
     return (
         <Carousel autoplay={true} arrows infinite={false}>
             {data.map((item, i) => <img alt={item.title} src={item.coverUrl} onClick={()=>onclick(i)} referrerPolicy="no-referrer" />)}

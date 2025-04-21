@@ -1,8 +1,10 @@
 import {Card, List} from "antd";
 import {useEffect, useState} from "react";
 import api from "@/api/api.jsx";
+import {useSelector} from "react-redux";
 
 export default function IndexNewsList(){
+    const isLogined = useSelector(state => state.user.isLogined);
     const [data, setData] = useState([]);
     const fetchData = async() => {
         let resp = await api.get("/tac/home-page/news",{params: {
@@ -15,7 +17,7 @@ export default function IndexNewsList(){
     useEffect(() => {
         fetchData();
         // TODO 分页/无限加载
-    }, []);
+    }, [isLogined]);
     return (
         <Card title={"资讯"}>
             <List
