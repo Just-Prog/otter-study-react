@@ -75,6 +75,13 @@
 
 #layoutSider{
     z-index: 2;
+    padding: 75px 30px;
+}
+
+#layoutSider > .ant-layout-sider-children{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @media screen and (max-width: 992px){

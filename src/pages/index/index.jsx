@@ -12,9 +12,11 @@ import {UserLoginCard} from "@/pages/user/login.jsx";
 import { logout } from '@/stores/user.jsx';
 import {MenuOutlined} from "@ant-design/icons";
 import {useState} from "react";
+
 import TenantCarousel from "@/components/index/tenant_carousel.jsx";
 import IndexNewsList from "@/components/index/news_list.jsx";
 import IndexThreeNews from "@/components/index/three_news.jsx";
+import TenantSwitcher from "@/components/index/tenant_switcher.jsx";
 
 function NavBarRight({ inDrawer = false }) {
   const isLogined = useSelector(state => state.user.isLogined);
@@ -81,7 +83,9 @@ function IndexFrame({children}) {
   }
   return (
       <Layout>
-        { isLogined && <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff"}} width="240px"></Sider> }
+        { isLogined && <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff"}} width="240px">
+          <TenantSwitcher />
+        </Sider> }
         <Layout id="layoutMain">
           <Header id="layoutHeader">
             <div id="layoutDrawerTrigger">
