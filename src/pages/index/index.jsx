@@ -1,7 +1,7 @@
 import {Avatar, Layout, Menu, Dropdown, Button, Row, Col, Carousel, Drawer, Card} from "antd";
 const { Header, Content, Footer, Sider } = Layout;
 import { useNavigate } from "react-router-dom";
-import {useDispatch, useSelector, useStore} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import "./index.css";
 import AntdMenuHyperLink from "@/components/common/antd_menu_hyperlink";
@@ -20,6 +20,7 @@ import TenantSwitcher from "@/components/index/tenant_switcher.jsx";
 
 function NavBarRight({ inDrawer = false }) {
   const isLogined = useSelector(state => state.user.isLogined);
+  const info = useSelector(state => state.user.info);
   const dispatch = useDispatch();
   const nav = useNavigate();
   const handleClick = (e) => {
@@ -32,6 +33,22 @@ function NavBarRight({ inDrawer = false }) {
     nav("/user/login");
   };
   const dropdownItems = [
+    {
+      key: "#info",
+      label: (
+          <>
+            <div style={{margin: "15px auto", display: "flex", justifyContent: "flex-start", flexDirection: "row"}}>
+              <div style={{marginRight: "10px", display: "flex", alignItems: "center"}}>
+                <Avatar src={<img src={info.av ?? default_avatar} referrerPolicy={"no-referrer"}/>} size={64}></Avatar>
+              </div>
+              <div style={{display: "flex", flexDirection: "column", flex: "1", justifyContent: "center"}}>
+                <span style={{fontSize: "18px", fontWeight: "bold"}}>{info.nm}</span>
+                <span style={{fontSize: "12px"}}>{info.tenants && JSON.stringify(info.tenants) !== "{}" && (info.tenants[0]?.tenantName ?? "未选择租户")}</span>
+              </div>
+            </div>
+          </>
+      ),
+    },
     {
       key: "#logout",
       label: (
@@ -46,8 +63,6 @@ function NavBarRight({ inDrawer = false }) {
     if(inDrawer)
       return (
         <div style={{width:'100%',display:'flex',flexDirection:'column',alignItems:'center'}}>
-          <Avatar src={default_avatar} size={64}></Avatar>
-          <div style={{height: '30px'}}/>
           <Menu items={dropdownItems} style={{width: '100%'}}/>
         </div>
       );
@@ -59,7 +74,7 @@ function NavBarRight({ inDrawer = false }) {
           menu={dropdownMenuProps}
           onClick={handleClick}
       >
-        <Avatar src={default_avatar}></Avatar>
+        <Avatar src={<img src={info.av ?? default_avatar} referrerPolicy={"no-referrer"}/>}></Avatar>
       </Dropdown>
     );
   else

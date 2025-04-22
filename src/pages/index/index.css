@@ -84,6 +84,10 @@
     align-items: center;
 }
 
+.ant-menu-vertical .ant-menu-item{
+    height: auto;
+}
+
 @media screen and (max-width: 992px){
     #layoutSider{
         display: none;
