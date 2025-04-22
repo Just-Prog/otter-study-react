@@ -1,4 +1,4 @@
-import {Avatar, Layout, Menu, Dropdown, Button, Row, Col, Carousel, Drawer, Card} from "antd";
+import {Avatar, Layout, Menu, Dropdown, Button, Row, Col, Carousel, Drawer, Card, Space, Badge} from "antd";
 const { Header, Content, Footer, Sider } = Layout;
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import TenantCarousel from "@/components/index/tenant_carousel.jsx";
 import IndexNewsList from "@/components/index/news_list.jsx";
 import IndexThreeNews from "@/components/index/three_news.jsx";
 import TenantSwitcher from "@/components/index/tenant_switcher.jsx";
+import MessageNotifyIcon from "@/components/index/message.jsx";
 
 function NavBarRight({ inDrawer = false }) {
   const isLogined = useSelector(state => state.user.isLogined);
@@ -67,15 +68,18 @@ function NavBarRight({ inDrawer = false }) {
         </div>
       );
     else return (
-      <Dropdown
-          trigger={["click", "hover"]}
-          placement="bottom"
-          arrow={true}
-          menu={dropdownMenuProps}
-          onClick={handleClick}
-      >
-        <Avatar src={<img src={info.av ?? default_avatar} referrerPolicy={"no-referrer"}/>}></Avatar>
-      </Dropdown>
+      <>
+        <MessageNotifyIcon style={{ marginRight: "20px" }}/>
+        <Dropdown
+            trigger={["click", "hover"]}
+            placement="bottom"
+            arrow={true}
+            menu={dropdownMenuProps}
+            onClick={handleClick}
+        >
+          <Avatar src={<img src={info.av ?? default_avatar} referrerPolicy={"no-referrer"}/>}></Avatar>
+        </Dropdown>
+      </>
     );
   else
     return (
