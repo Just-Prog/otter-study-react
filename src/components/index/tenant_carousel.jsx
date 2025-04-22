@@ -23,7 +23,7 @@ export default function TenantCarousel(){
         fetchCarouselData();
     },[isLogined])
     return (
-        <Carousel autoplay={true} arrows infinite={false}>
+        <Carousel autoplay={true} arrows infinite={true}>
             {data.map((item, i) => <img alt={item.title} src={item.coverUrl} onClick={()=>onclick(i)} referrerPolicy="no-referrer" />)}
         </Carousel>
     );
