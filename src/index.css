@@ -9,3 +9,7 @@
 .ant-card .ant-card-body{
     padding: 16px;
 }
+
+.ant-drawer-header-title, .ant-drawer-title{
+    overflow: hidden;
+}

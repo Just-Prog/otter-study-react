@@ -33,6 +33,7 @@ function MessageNotifyIcon({style}) {
     const [detailOpen, setDetailOpen] = useState(false);
     const [msgList, setMsgList] = useState([]);
     const [detailList, setDetailList] = useState([]);
+    const [detailInfo, setDetailInfo] = useState({});
     const pageNum = useRef(0);
     const [unread, setUnread] = useState(0);
     const fetchUnreadCount = () => {
@@ -54,7 +55,8 @@ function MessageNotifyIcon({style}) {
             params.classId = item.classId;
         }
         let resp = await api.get(`/tac/teaching-msg/v1/category/${item.msgCategory}`, {params: params});
-        console.log(resp.data);
+        setDetailList(resp.data.resMap);
+        setDetailInfo(item)
     }
     const handleMainOpen = async () => {
         await fetchMsgList();
@@ -63,7 +65,6 @@ function MessageNotifyIcon({style}) {
     const handleMainClose = () => {
         setOpen(false);
         setDetailList([]);
-        pageNum.current = 0;
     }
     const handleDetailOpen = async (item) => {
         await fetchMsgDetail(item);
@@ -71,6 +72,9 @@ function MessageNotifyIcon({style}) {
     }
     const handleDetailClose = () => {
         setDetailOpen(false);
+        setDetailList([]);
+        setDetailInfo({});
+        pageNum.current = 0;
     }
     useEffect(() => {
         fetchUnreadCount();
@@ -101,7 +105,16 @@ function MessageNotifyIcon({style}) {
                       </Col>
                   </Row>
               </List.Item>)}/>
-              <Drawer open={detailOpen} onClose={() => handleDetailClose()} title={"<UNK>"} width={375}>
+              <Drawer open={detailOpen} onClose={() => handleDetailClose()} title={
+                  <>
+                      <div style={{width: "100%", maxWidth: "100%", fontSize: "18px", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden"}}>
+                          <span>{detailInfo.className}</span>
+                      </div>
+                      <div style={{width: "100%", maxWidth: "100%", fontSize: "13px", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", color: "#fc996e"}}>
+                          @{detailInfo.tenantName}
+                      </div>
+                  </>
+              } width={375}>
                   111222
               </Drawer>
           </Drawer>
