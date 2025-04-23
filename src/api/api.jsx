@@ -47,7 +47,6 @@ const requestInterceptor = async (config) => {
 api.interceptors.request.use(
     async(config)=>{
         let data = await requestInterceptor(config);
-        console.log(data.url, data.headers);
         return data;
     },
   error => {
