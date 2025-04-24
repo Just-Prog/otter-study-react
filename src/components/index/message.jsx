@@ -1,4 +1,4 @@
-import {Badge, Button, Col, Drawer, List, Row} from "antd";
+import {Badge, Button, Card, Col, Drawer, List, Row, Space} from "antd";
 import {MessageOutlined} from "@ant-design/icons";
 import {useEffect, useRef, useState} from "react";
 import api from "@/api/api.jsx";
@@ -10,15 +10,37 @@ import INNER_PUSH from "@/assets/icons/message/icon-inner-push.png";
 import PROJECT_HELPER from "@/assets/icons/message/icon-project-helper.png";
 import PROJECT_PUSH from "@/assets/icons/message/icon-project-push.png";
 import RECRUIT_INVITE from "@/assets/icons/message/icon-recruit-push.png";
+import {activityDesc, fileExt2Icons} from "@/components/common/otter_common_define.js";
 
-const msgTypeIcon = {
-    EXAM_NOTICE: EXAM_NOTICE,
-    SYSTEM_NOTICE: SYSTEM_NOTICE,
-    GOK_JOB: GOK_JOB,
-    INNER_PUSH: INNER_PUSH,
-    PROJECT_HELPER: PROJECT_HELPER,
-    PROJECT_PUSH: PROJECT_PUSH,
-    RECRUIT_INVITE: RECRUIT_INVITE
+const msgType = {
+    EXAM_NOTICE: {
+        desc: "考试通知",
+        icon: EXAM_NOTICE
+    },
+    SYSTEM_NOTICE: {
+        desc: "系统通知",
+        icon: SYSTEM_NOTICE
+    },
+    GOK_JOB: {
+        desc: "国科就业",
+        icon: GOK_JOB
+    },
+    INNER_PUSH: {
+        desc: "内推邀请",
+        icon: INNER_PUSH
+    },
+    PROJECT_HELPER: {
+        desc: "项目助手",
+        icon: PROJECT_HELPER
+    },
+    PROJECT_PUSH: {
+        desc: "项目推荐",
+        icon: PROJECT_PUSH
+    },
+    RECRUIT_INVITE: {
+        desc: "校招邀请",
+        icon: RECRUIT_INVITE
+    }
 };
 
 const iconBgColor = [
@@ -46,17 +68,29 @@ function MessageNotifyIcon({style}) {
         setMsgList(resp.data);
     }
     const fetchMsgDetail = async (item) => {
-        pageNum.current ++;
-        let params = {
-            pageSize: 15,
-            pageNo: pageNum.current,
-        };
-        if(item.msgCategory !== "SYSTEM_NOTICE"){
-            params.classId = item.classId;
+        try{
+            pageNum.current ++;
+            let params = {
+                pageSize: 15,
+                pageNo: pageNum.current,
+            };
+            if(item.msgCategory !== "SYSTEM_NOTICE"){
+                params.classId = item.classId;
+            }
+            let resp = await api.get(`/tac/teaching-msg/v1/category/${item.msgCategory}`, {params: params});
+            let resMapData = Object.entries(resp.data.resMap);
+            let resMap = [];
+            for (const [key, value] of resMapData) {
+                resMap.push({
+                    date: key,
+                    data: value,
+                })
+            }
+            setDetailList(resMap);
+            setDetailInfo(item)
+        }catch(e){
+            pageNum.current = 0;
         }
-        let resp = await api.get(`/tac/teaching-msg/v1/category/${item.msgCategory}`, {params: params});
-        setDetailList(resp.data.resMap);
-        setDetailInfo(item)
     }
     const handleMainOpen = async () => {
         await fetchMsgList();
@@ -92,7 +126,7 @@ function MessageNotifyIcon({style}) {
                               ? <div style={{borderRadius: "50%", backgroundColor: iconBgColor[ index % 4 ]}}>
                                   {item.className.charAt(0)}
                                 </div>
-                              : <div style={{height:'100%',width:'100%',background: `url(${msgTypeIcon[item.msgCategory]})`, backgroundRepeat: "no-repeat", backgroundPosition: "center", backgroundSize: "contain"}}/>
+                              : <div style={{height:'100%',width:'100%',background: `url(${msgType[item.msgCategory ?? "SYSTEM_NOTICE"].icon})`, backgroundRepeat: "no-repeat", backgroundPosition: "center", backgroundSize: "contain"}}/>
                           }
                       </Col>
                       <Col flex="auto">
@@ -106,16 +140,35 @@ function MessageNotifyIcon({style}) {
                   </Row>
               </List.Item>)}/>
               <Drawer open={detailOpen} onClose={() => handleDetailClose()} title={
-                  <>
-                      <div style={{width: "100%", maxWidth: "100%", fontSize: "18px", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden"}}>
-                          <span>{detailInfo.className}</span>
-                      </div>
-                      <div style={{width: "100%", maxWidth: "100%", fontSize: "13px", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", color: "#fc996e"}}>
-                          @{detailInfo.tenantName}
-                      </div>
-                  </>
+                  detailInfo.msgCategory === "CLASS_NOTICE" ? <>
+                          <div style={{width: "100%", maxWidth: "100%", fontSize: "18px", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden"}}>
+                              <span>{detailInfo.className}</span>
+                          </div>
+                          <div style={{width: "100%", maxWidth: "100%", fontSize: "13px", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", color: "#fc996e"}}>
+                              @{detailInfo.tenantName}
+                          </div>
+                      </>
+                      : <div> { msgType[detailInfo.msgCategory ?? "SYSTEM_NOTICE"].desc ?? "" } </div>
               } width={375}>
-                  111222
+                  <List dataSource={detailList} renderItem={(item, index) => (
+                      <List.Item>
+                          <Space direction={"vertical"} size={"large"} style={{width: "100%", margin: "15px 0"}} >
+                              <div style={{textAlign: "center"}}>
+                                  <span style={{fontSize: "14px", textAlign: "center", padding: "5px 10px", borderRadius: "10px", background: "#ddd", color: "#fff"}}>{item.date}</span>
+                              </div>
+                              { item.data.map((item, index) => (
+                                  <Card title={<div style={{display: "flex", alignItems: "center", width: "100%"}}>
+                                      <img src={item.type !== 5 ? activityDesc[item.type].icon : fileExt2Icons(item.typeStr)} height={24} style={{marginRight: "10px"}} />
+                                      <span>{activityDesc[item.type].name}</span>
+                                  </div>}>
+                                      <span style={{fontSize: "13px"}}>
+                                          {item.remark}
+                                      </span>
+                                  </Card>
+                              )) }
+                          </Space>
+                      </List.Item>
+                  )}></List>
               </Drawer>
           </Drawer>
       </div>
