@@ -102,6 +102,7 @@ function MessageNotifyIcon({style}) {
     }
     const handleDetailOpen = async (item) => {
         await fetchMsgDetail(item);
+        await fetchMsgList();
         setDetailOpen(true);
     }
     const handleDetailClose = () => {
@@ -135,6 +136,14 @@ function MessageNotifyIcon({style}) {
                           </div>
                           <div style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", fontSize: "13px"}}>
                               {item.remark}
+                          </div>
+                      </Col>
+                      <Col>
+                          <div style={{display: "flex", flexDirection: "column",alignItems: "end"}}>
+                              <div style={{whiteSpace: "nowrap", fontSize: "12px"}}>
+                                  {item.timeTxt}
+                              </div>
+                              <Badge count={item.unreadNum}/>
                           </div>
                       </Col>
                   </Row>

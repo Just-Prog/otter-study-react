@@ -23,24 +23,24 @@ import FILE_MARKDOWN from "@/assets/icons/files/icon-md.png"
 import FILE from "@/assets/icons/files/icon-other.png"
 
 const activityDesc = {
-    0: {"name": "作业", "icon": HOMEWORK},
-    1: {"name": "头脑风暴", "icon": BRAINSTORM},
-    2: {"name": "测试", "icon": TEST},
-    3: {"name": "通知", "icon": NOTICE},
-    4: {"name": "签到", "icon": SIGN_IN},
-    5: {"name": "课件", "icon": COURSEWARE},
-    6: {"name": "活动", "icon": SYSTEM_NOTICE},
-    12: {"name": "视频", "icon": VIDEO},
-    13: {"name": "问卷", "icon": VOTE},
-    14: {"name": "考试", "icon": EXAM_NOTICE},
-    15: {"name": "练习", "icon": PRACTICE},
+    0: {name: "作业", icon: HOMEWORK},
+    1: {name: "头脑风暴", icon: BRAINSTORM},
+    2: {name: "测试", icon: TEST},
+    3: {name: "通知", icon: NOTICE},
+    4: {name: "签到", icon: SIGN_IN},
+    5: {name: "课件", icon: COURSEWARE},
+    6: {name: "活动", icon: SYSTEM_NOTICE},
+    12: {name: "视频", icon: VIDEO},
+    13: {name: "问卷", icon: VOTE},
+    14: {name: "考试", icon: EXAM_NOTICE},
+    15: {name: "练习", icon: PRACTICE},
     16: {
-        "name": "外部链接",
-        "icon": EXTERNAL_LINKS
+        name: "外部链接",
+        icon: EXTERNAL_LINKS
     },
     "-1": {
-        "name": "默认系统通知标题",
-        "icon": SYSTEM_NOTICE
+        name: "默认系统通知标题",
+        icon: SYSTEM_NOTICE
     }
 };
 
@@ -94,5 +94,10 @@ const fileExt2Icons = (ext) => {
     }
 }
 
+const classTypeDesc = {
+    CLASS_COURSE: "班课",
+    GROWTH_COURSE: "成长",
+    PRACTICE_ARENA: "练习"
+}
 
-export { activityDesc, fileExt2Icons };
+export { activityDesc, fileExt2Icons, classTypeDesc };

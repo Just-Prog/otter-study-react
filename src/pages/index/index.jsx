@@ -18,6 +18,7 @@ import IndexNewsList from "@/components/index/news_list.jsx";
 import IndexThreeNews from "@/components/index/three_news.jsx";
 import TenantSwitcher from "@/components/index/tenant_switcher.jsx";
 import MessageNotifyIcon from "@/components/index/message.jsx";
+import {CourseActivity, CoursewareList, RecentContent} from "@/components/index/stu_activities.jsx";
 
 function NavBarRight({ inDrawer = false }) {
   const isLogined = useSelector(state => state.user.isLogined);
@@ -165,11 +166,15 @@ function IndexPage() {
           <IndexFrame>
             <Row gutter={{ xs: 4, lg: 24}}>
               <Col xs={24} lg={12}>
-                <TenantCarousel/>
-                <IndexNewsList/>
+                <div className="vertical_col">
+                  <TenantCarousel/>
+                  <IndexNewsList/>
+                </div>
               </Col>
               <Col xs={0} lg={12}>
-                <UserLoginCard style={{background: "linear-gradient(180deg, rgba(55, 120, 252, 0.15), white 60%)", width: "100%", position: "sticky", top: "79px"}}/> {/* 79px=header(64px)+margin-top(15px) */}
+                <div className="vertical_col">
+                  <UserLoginCard style={{background: "linear-gradient(180deg, rgba(55, 120, 252, 0.15), white 60%)", width: "100%", position: "sticky", top: "79px"}}/> {/* 79px=header(64px)+margin-top(15px) */}
+                </div>
               </Col>
             </Row>
           </IndexFrame>
@@ -178,15 +183,27 @@ function IndexPage() {
   else return (
       <>
         <IndexFrame>
-          <Row gutter={{ xs: 4, lg: 24}}>
+          <Row gutter={[{xs:4, lg:24},20]}>
             <Col xs={24} lg={12}>
-              <TenantCarousel/>
-              <IndexThreeNews/>
+              <div className="vertical_col">
+                <TenantCarousel/>
+                <IndexThreeNews/>
+                <CourseActivity/>
+              </div>
             </Col>
             <Col xs={24} lg={12}>
-              { tenant ? null : <Card title={"选择租户"}>
-                <TenantSwitcher isMenu={true} />
-              </Card> }
+              <div className="vertical_col">
+                {tenant ?
+                    <>
+                      <RecentContent/>
+                      <CoursewareList/>
+                    </>
+                    :
+                    <Card title={"选择租户"}>
+                      <TenantSwitcher isMenu={true} />
+                    </Card>
+                }
+              </div>
             </Col>
           </Row>
         </IndexFrame>
