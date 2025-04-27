@@ -1,4 +1,4 @@
-import {Button, Card, Col, List, Row, Typography} from "antd";
+import {Button, Card, Col, List, Row, Space, Typography} from "antd";
 import {useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {activityDesc, classTypeDesc, fileExt2Icons} from "@/components/common/otter_common_define.js";
@@ -16,25 +16,27 @@ function RecentContent() {
     }, []);
     return (
         <Card title={"最近访问"}>
-            {content.recentFlag ? (<div style={{backgroundColor: "#f6f9ff", borderRadius: "10px", display: "flex", alignItems: "center", padding: "12px"}} >
-                <img src={fileExt2Icons(content.typeStr)} height={20} style={{ marginRight: "10px" }} />
-                <span style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1}}>
+            <Space direction="vertical">
+                {content.recentFlag ? (<div style={{backgroundColor: "#f6f9ff", borderRadius: "10px", display: "flex", alignItems: "center", padding: "12px"}} >
+                    <img src={fileExt2Icons(content.typeStr)} height={20} style={{ marginRight: "10px" }} />
+                    <span style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1}}>
                     {content.dataName ?? "未知文件名"}
                 </span>
-                <Button type="primary">继续学习</Button>
-            </div>) : null}
-            <Row gutter={[8,4]}>
-                {recentListRes.map((item, index) => {
-                    return (
-                        <Col span={"12"} style={{height: "36px", display: "flex", alignItems: "center"}}>
-                            <span style={{margin: "7px 7px", padding: "3px", borderRadius: "7px", border: "#fc996e solid 1px", fontSize: "12px", color: "#fc996e"}}>{classTypeDesc[item.recordType]}</span>
-                            <span style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1}}>
+                    <Button type="primary">继续学习</Button>
+                </div>) : null}
+                <Row gutter={[8,4]}>
+                    {recentListRes.map((item, index) => {
+                        return (
+                            <Col span={"12"} style={{height: "36px", display: "flex", alignItems: "center"}}>
+                                <span style={{margin: "7px 7px", padding: "3px", borderRadius: "7px", border: "#fc996e solid 1px", fontSize: "12px", color: "#fc996e"}}>{classTypeDesc[item.recordType]}</span>
+                                <span style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1}}>
                                 {item.recordName}
                             </span>
-                        </Col>
-                    )
-                })}
-            </Row>
+                            </Col>
+                        )
+                    })}
+                </Row>
+            </Space>
         </Card>
     )
 }

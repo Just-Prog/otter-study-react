@@ -1,4 +1,4 @@
-import { Dropdown, Menu } from "antd";
+import {Dropdown, Menu, Typography} from "antd";
 import { useEffect, useState } from "react";
 
 import api from "@/api/api";
@@ -34,11 +34,11 @@ export default function TenantSwitcher({ isMenu = false }){
         return <Menu items={items} selectable={false} onClick={menuProps.onClick} />;
     }
     return (
-      <Dropdown menu={menuProps}>
-        <span>
-          <span>{current}</span>
-          <CaretDownOutlined />
-        </span>
-      </Dropdown>
+        <div style={{width: "100%",display: "flex", justifyContent: "space-between"}}>
+            <Typography.Text ellipsis={true}>{current}</Typography.Text>
+            <Dropdown menu={menuProps}>
+                <CaretDownOutlined />
+            </Dropdown>
+        </div>
     );
 }
