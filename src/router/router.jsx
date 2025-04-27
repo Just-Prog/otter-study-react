@@ -4,6 +4,7 @@ import ErrorPage from "@/pages/error.jsx";
 
 import IndexPage from "@/pages/index/index.jsx";
 import UserLoginPage from "@/pages/user/login.jsx";
+import LearningIndexPage from "@/pages/index/learning/learning.jsx";
 
 const router = createHashRouter([
   {
@@ -14,6 +15,10 @@ const router = createHashRouter([
   {
     path: "/user/login",
     element: <UserLoginPage />,
+  },
+  {
+    path: "/classes",
+    element: <LearningIndexPage />
   }
 ]);
 

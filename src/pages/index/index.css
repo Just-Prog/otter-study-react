@@ -75,7 +75,7 @@
 
 #layoutSider{
     z-index: 2;
-    padding: 75px 30px;
+    padding: 65px 25px;
 }
 
 #layoutSider > .ant-layout-sider-children{

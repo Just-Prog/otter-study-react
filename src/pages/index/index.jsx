@@ -10,8 +10,8 @@ import default_avatar from "@/assets/avatar/default.svg";
 import logo from "@/assets/logo.png";
 import {UserLoginCard} from "@/pages/user/login.jsx";
 import { logout } from '@/stores/user.jsx';
-import {MenuOutlined} from "@ant-design/icons";
-import {useState} from "react";
+import {EditOutlined, HomeOutlined, MenuOutlined} from "@ant-design/icons";
+import {useEffect, useState} from "react";
 
 import TenantCarousel from "@/components/index/tenant_carousel.jsx";
 import IndexNewsList from "@/components/index/news_list.jsx";
@@ -19,6 +19,7 @@ import IndexThreeNews from "@/components/index/three_news.jsx";
 import TenantSwitcher from "@/components/index/tenant_switcher.jsx";
 import MessageNotifyIcon from "@/components/index/message.jsx";
 import {CourseActivity, CoursewareList, RecentContent} from "@/components/index/stu_activities.jsx";
+import {useLocation} from "react-router";
 
 function NavBarRight({ inDrawer = false }) {
   const isLogined = useSelector(state => state.user.isLogined);
@@ -94,6 +95,8 @@ function NavBarRight({ inDrawer = false }) {
 
 function IndexFrame({children}) {
   const isLogined = useSelector(state => state.user.isLogined);
+  const location = useLocation();
+  const nav = useNavigate();
   const tenant = useSelector((state) => {
     try {
       return state.user.info.tenants[0].tenantId;
@@ -102,17 +105,41 @@ function IndexFrame({children}) {
     }
   });
   const [open, setOpen] = useState(false);
+  const [siderDefault, setSiderDefault] = useState([]);
   const openDrawer = () => {
     setOpen(true);
   }
   const closeDrawer = () => {
     setOpen(false);
   }
+  const sideBarStu = [
+    {
+      key: "/",
+      label: "首页",
+      icon: <HomeOutlined />,
+    },
+    {
+      key: "/classes",
+      label: "学习",
+      icon: <EditOutlined />
+    }
+  ]
+  const onclick = (item) => {
+    nav(item.key);
+  }
+  useEffect(() => {
+    setSiderDefault([location.pathname])
+  }, []);
   return (
       <Layout>
-        { isLogined && tenant && <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff"}} width="240px">
-          <TenantSwitcher />
-        </Sider> }
+        { isLogined && tenant &&
+          <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff", height: "100vh", position: "sticky", top: "0", display: "flex", flexDirection: "column"}} width="240px">
+            <TenantSwitcher />
+            <Menu items={sideBarStu} multiple={false} selectedKeys={siderDefault} onClick={onclick} style={{width: "100%", marginTop: "15px", borderInlineEnd: "none", flex: 1}}/>
+            <div>
+              OtterStudy 2025
+            </div>
+          </Sider> }
         <Layout id="layoutMain">
           <Header id="layoutHeader">
             <div id="layoutDrawerTrigger">
@@ -210,5 +237,7 @@ function IndexPage() {
       </>
   );
 }
+
+export { IndexFrame };
 
 export default IndexPage;
