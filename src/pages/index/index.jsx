@@ -133,7 +133,7 @@ function IndexFrame({children}) {
   return (
       <Layout>
         { isLogined && tenant &&
-          <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff", height: "100vh", position: "sticky", top: "0", display: "flex", flexDirection: "column"}} width="240px">
+          <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff", height: "100vh", position: "sticky", top: "0", display: "flex", flexDirection: "column"}} width="240px" collapsedWidth="0" trigger={null}>
             <TenantSwitcher />
             <Menu items={sideBarStu} multiple={false} selectedKeys={siderDefault} onClick={onclick} style={{width: "100%", marginTop: "15px", borderInlineEnd: "none", flex: 1}}/>
             <div>
@@ -173,6 +173,7 @@ function IndexFrame({children}) {
             width={315}
         >
           <NavBarRight inDrawer={true}/>
+          <Menu items={sideBarStu} multiple={false} selectedKeys={siderDefault} onClick={onclick} style={{width: "100%", marginTop: "15px", borderInlineEnd: "none", flex: 1}}/>
         </Drawer>
       </Layout>
   );
@@ -215,7 +216,7 @@ function IndexPage() {
               <div className="vertical_col">
                 <TenantCarousel/>
                 <IndexThreeNews/>
-                <CourseActivity/>
+                {tenant && <CourseActivity/>}
               </div>
             </Col>
             <Col xs={24} lg={12}>
