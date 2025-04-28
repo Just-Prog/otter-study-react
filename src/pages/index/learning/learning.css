@@ -1,0 +1,8 @@
+.class_tiles{
+    /*height: 70vh;*/
+    min-height: 70vh;
+}
+
+.class_tiles > .ant-card-body{
+    height: 100%;
+}
