@@ -6,10 +6,6 @@
     height: 100%;
 }
 
-.ant-card .ant-card-body, .ant-card .ant-card-head{
-    padding: 16px;
-}
-
 .ant-drawer-header-title, .ant-drawer-title{
     overflow: hidden;
 }

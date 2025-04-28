@@ -13,7 +13,16 @@ const app = () => {
 
     return (
         <Provider store={userStore}>
-          <ConfigProvider>
+          <ConfigProvider
+              theme={{
+                  components: {
+                      Card: {
+                          bodyPadding: 16,
+                          headerPadding: 16
+                      },
+                  },
+              }}
+          >
             <RouterProvider router={router} />
           </ConfigProvider>
         </Provider>
