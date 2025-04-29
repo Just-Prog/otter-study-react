@@ -26,7 +26,7 @@ const ClassTilesPage = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [archiveVisible, setArchiveVisible] = useState(false);
     const [addDialogVisible, setAddDialogVisible] = useState(false);
-    const [archiveList, setArchiveList] = useState([]);
+    const [joinClassCode, setJoinClassCode] = useState("");
     const fetchClassList = async () => {
         let resp = await api.post("/tac/class/v1/stu/class",{
             name: searchQuery
@@ -49,10 +49,23 @@ const ClassTilesPage = () => {
     const quitClass = async (item) => {
         let resp = await api.post("/tac/class/exitClass",{
             classId: item.id,
-            courseId: item.courseId
+            courseId: item.id
         });
         await fetchClassList();
         messageApi.success(resp.data.message);
+    }
+
+    const joinClass = async () => {
+        api.get('/tac/class/getClassInfo/code',{params: {
+            classCode: joinClassCode
+        }}).then(async(_)=>{
+            await api.post("/tac/class/join",{
+                classCode: joinClassCode
+            });
+            await fetchClassList();
+            messageApi.success("添加成功");
+        });
+        setJoinClassCode("");
     }
 
     const openArchiveDrawer = ()=>{
@@ -139,10 +152,11 @@ const ClassTilesPage = () => {
                 {archiveVisible ? <ArchiveManagePage/> : null}
             </Drawer>
             <Modal title="添加班课" open={addDialogVisible} onCancel={() => setAddDialogVisible(false)} onOk={() => {
-                // TODO 确定逻辑
-                setAddDialogVisible(false);
+                joinClass().then(()=>{
+                    setAddDialogVisible(false);
+                })
             }}>
-                // TODO
+                <Input placeholder="请输入目标课程码" maxLength={6} value={joinClassCode} onChange={(v)=>setJoinClassCode(v.target.value)}/>
             </Modal>
         </>
     );
