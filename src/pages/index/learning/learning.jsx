@@ -187,46 +187,43 @@ const ArchiveManagePage = () => {
     return (
         <>
             {contextHolder}
-            {archiveList.length !== 0 ?
-                <div className="archive_manage_list">
-                    <div className="archive_manage_header">
-                        <Input.Search
-                            placeholder="搜索班课名/任课教师"
-                            allowClear
-                            enterButton={<SearchOutlined/>}
-                            onSearch={(v)=>setSearchQuery(v)}
-                        />
-                    </div>
-                    <Row gutter={[15, 15]}>
-                        {archiveList.map((item, index) => {
-                            return (
-                                <Col span={24}>
-                                    <Card
-                                        hoverable
-                                        actions={[
-                                            <Popover content={"归档"}>
-                                                <BookOutlined onClick={() => changeArchiveStatus(item)}/>
-                                            </Popover>,
-                                            <Popover content={"查看"}>
-                                                <EyeOutlined onClick={() => {}}/>
-                                            </Popover>
-                                        ]}
-                                    >
-                                        <Card.Meta
-                                            title={item.className}
-                                            description={<div>
-                                                任课教师: {item.creator}<br/>
-                                                类别: {item.type === 0 ? "普通班课" : "公开课"}
-                                            </div>}
-                                        />
-                                    </Card>
-                                </Col>
-                            )
-                        })}
-                    </Row>
+            <div className="archive_manage_list">
+                <div className="archive_manage_header">
+                    <Input.Search
+                        placeholder="搜索班课名/任课教师"
+                        allowClear
+                        enterButton={<SearchOutlined/>}
+                        onSearch={(v)=>setSearchQuery(v)}
+                    />
                 </div>
-                : <Empty/>
-            }
+                {archiveList.length !== 0 ? <Row gutter={[15, 15]}>
+                    {archiveList.map((item, index) => {
+                        return (
+                            <Col span={24}>
+                                <Card
+                                    hoverable
+                                    actions={[
+                                        <Popover content={"归档"}>
+                                            <BookOutlined onClick={() => changeArchiveStatus(item)}/>
+                                        </Popover>,
+                                        <Popover content={"查看"}>
+                                            <EyeOutlined onClick={() => {}}/>
+                                        </Popover>
+                                    ]}
+                                >
+                                    <Card.Meta
+                                        title={item.className}
+                                        description={<div>
+                                            任课教师: {item.creator}<br/>
+                                            类别: {item.type === 0 ? "普通班课" : "公开课"}
+                                        </div>}
+                                    />
+                                </Card>
+                            </Col>
+                        )
+                    })}
+                </Row> : <Empty/>}
+            </div>
         </>
     );
 }
