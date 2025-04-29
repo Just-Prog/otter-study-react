@@ -3,6 +3,18 @@
     min-height: 70vh;
 }
 
-.class_tiles > .ant-card-body{
-    height: 100%;
+.class_tiles > .ant-card-body > *, .archive_manage_list > *{
+    margin-bottom: 15px;
+}
+
+.class_tiles .ant-card-body > *:last-child, .archive_manage_list > *:last-child{
+    margin-bottom: 0 !important;
+}
+
+.class_tiles_item{
+    transition: all 0.2s linear;
+}
+
+.class_tiles_item:hover{
+    transform: translate(0, -2px);
 }
