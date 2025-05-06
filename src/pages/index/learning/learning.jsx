@@ -171,6 +171,7 @@ const ArchiveManagePage = () => {
             classId: item.id,
         });
         messageApi.success("取消归档成功"); // 后端归档和取消归档都返回"归档成功"，难绷
+        await fetchArchiveList();
     }
     const fetchArchiveList = async () => {
         let resp = await api.post("/tac/class/getArchivesClass",{
