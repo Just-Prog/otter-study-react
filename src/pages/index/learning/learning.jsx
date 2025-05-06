@@ -9,6 +9,7 @@ import api from "@/api/api.jsx";
 import "./learning.css"
 
 import default_cropper from "@/assets/default-cropper.png"
+import {useNavigate} from "react-router-dom";
 
 const ClassBigCard = ({children}) => {
     return (
@@ -27,6 +28,7 @@ const ClassTilesPage = () => {
     const [archiveVisible, setArchiveVisible] = useState(false);
     const [addDialogVisible, setAddDialogVisible] = useState(false);
     const [joinClassCode, setJoinClassCode] = useState("");
+    const nav = useNavigate();
     const fetchClassList = async () => {
         let resp = await api.post("/tac/class/v1/stu/class",{
             name: searchQuery
@@ -133,6 +135,9 @@ const ClassTilesPage = () => {
                                             <CloseCircleOutlined onClick={() => quitClass(i)}/>
                                         </Popover>,
                                     ]}
+                                    onClick={()=>{
+                                        nav(`/class-detail/${i.id}/${i.courseId}/courseware`)
+                                    }}
                                 >
                                     <Card.Meta
                                         title={i.className}
@@ -166,6 +171,7 @@ const ArchiveManagePage = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [searchQuery, setSearchQuery] = useState("");
     const [archiveList, setArchiveList] = useState([]);
+    const nav = useNavigate();
     const changeArchiveStatus = async (item) => {
         let resp = await api.post("/tac/class/archives",{
             classId: item.id,
@@ -208,7 +214,9 @@ const ArchiveManagePage = () => {
                                             <BookOutlined onClick={() => changeArchiveStatus(item)}/>
                                         </Popover>,
                                         <Popover content={"查看"}>
-                                            <EyeOutlined onClick={() => {}}/>
+                                            <EyeOutlined onClick={() => {
+                                                nav(`/class-detail/${item.id}/${item.courseId}/courseware`)
+                                            }}/>
                                         </Popover>
                                     ]}
                                 >
@@ -246,7 +254,7 @@ const LearningIndexPage = () => {
     ];
     return (
         <>
-            <IndexFrame>
+            <IndexFrame showSider={true}>
                 <Tabs
                     defaultActiveKey="classes"
                     items={items}

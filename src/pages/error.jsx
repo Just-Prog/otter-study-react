@@ -21,7 +21,7 @@ export default function ErrorPage(){
                 <h1>页面发生错误</h1>
             </div>
             <div>
-                <p>{routerError.statusText}</p>
+                <p>{routerError.error ? routerError.error.toString() : routerError.toString()}</p>
             </div>
             <div>
                 <Button type="primary" onClick={()=>{

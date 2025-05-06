@@ -31,6 +31,7 @@ function NavBarRight({ inDrawer = false }) {
   }
   const logoutAction = () => {
     dispatch(logout());
+    nav("/");
   };
   const onButtonClicked = () => {
     nav("/user/login");
@@ -93,7 +94,7 @@ function NavBarRight({ inDrawer = false }) {
     );
 }
 
-function IndexFrame({children}) {
+function IndexFrame({children, showSider = false}) {
   const isLogined = useSelector(state => state.user.isLogined);
   const location = useLocation();
   const nav = useNavigate();
@@ -132,7 +133,7 @@ function IndexFrame({children}) {
   }, []);
   return (
       <Layout>
-        { isLogined && tenant &&
+        { isLogined && tenant && showSider &&
           <Sider id="layoutSider" breakpoint={'lg'} style={{background: "#fff", height: "100vh", position: "sticky", top: "0", display: "flex", flexDirection: "column"}} width="240px" collapsedWidth="0" trigger={null}>
             <TenantSwitcher />
             <Menu items={sideBarStu} multiple={false} selectedKeys={siderDefault} onClick={onclick} style={{width: "100%", marginTop: "15px", borderInlineEnd: "none", flex: 1}}/>
@@ -210,7 +211,7 @@ function IndexPage() {
     );
   else return (
       <>
-        <IndexFrame>
+        <IndexFrame showSider={true}>
           <Row gutter={[{xs:4, lg:24},20]}>
             <Col xs={24} lg={12}>
               <div className="vertical_col">
