@@ -122,6 +122,9 @@ const ClassTilesPage = () => {
                                             height={"140px"}
                                             style={{objectFit: 'cover'}}
                                             alt={i.className}
+                                            onClick={()=>{
+                                                nav(`/class-detail/${i.id}/${i.courseId}`)
+                                            }}
                                         />
                                     }
                                     actions={[
@@ -135,16 +138,20 @@ const ClassTilesPage = () => {
                                             <CloseCircleOutlined onClick={() => quitClass(i)}/>
                                         </Popover>,
                                     ]}
-                                    onClick={()=>{
-                                        nav(`/class-detail/${i.id}/${i.courseId}/courseware`)
-                                    }}
                                 >
                                     <Card.Meta
                                         title={i.className}
-                                        description={<div style={{fontSize: "13px"}}>
-                                            <div>任课教师: {i.creator}</div>
-                                            <div>课程码: {i.classCode}</div>
-                                        </div>}
+                                        description={
+                                            <div
+                                                style={{fontSize: "13px"}}
+                                                onClick={()=>{
+                                                    nav(`/class-detail/${i.id}/${i.courseId}`)
+                                                }}
+                                            >
+                                                <div>任课教师: {i.creator}</div>
+                                                <div>课程码: {i.classCode}</div>
+                                            </div>
+                                        }
                                     />
                                 </Card>
                             </Col>
@@ -215,7 +222,7 @@ const ArchiveManagePage = () => {
                                         </Popover>,
                                         <Popover content={"查看"}>
                                             <EyeOutlined onClick={() => {
-                                                nav(`/class-detail/${item.id}/${item.courseId}/courseware`)
+                                                nav(`/class-detail/${item.id}/${item.courseId}`)
                                             }}/>
                                         </Popover>
                                     ]}
