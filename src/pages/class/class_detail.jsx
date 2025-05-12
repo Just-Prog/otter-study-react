@@ -17,6 +17,8 @@ const ClassDetailContext = createContext({
 
 const ClassCourseWareActivityPage = ()=>{
     const isActivityMatched = useMatch({path: "/class-detail/:classId/:courseId/activity", end: false})
+    const params = useParams();
+    const type = params.type;
     const tabBarItems = [
         {
             key: 'chapters',
@@ -34,7 +36,7 @@ const ClassCourseWareActivityPage = ()=>{
             <Row gutter={[12,12]}>
                 <Col lg={8} xs={24}>
                     <Card className="class-content-left-card" style={{position: "sticky", top: 80, height: "65vh", maxHeight: "65vh"}}>
-                        <Tabs defaultActiveKey={isActivityMatched ? "activity" : "chapters"} items={tabBarItems} className="class-content-left-tabs"/>
+                        <Tabs defaultActiveKey={(isActivityMatched && type == 4) ? "activity" : "chapters"} items={tabBarItems} className="class-content-left-tabs"/>
                     </Card>
                 </Col>
                 <Col lg={16} xs={24}>
@@ -62,7 +64,8 @@ const ClassActivityPage = () => {
 
 const ClassChapterList = ()=>{
     const params = useParams();
-    const docId = params.docId ?? 0;
+    const docId = params.docId ?? params.actId ?? 0;
+    const type = params.type ?? 5;
     const navigate = useNavigate();
     const {classId, courseId} = useContext(ClassDetailContext);
     const [details, setDetails] = useState([]);
@@ -95,17 +98,25 @@ const ClassChapterList = ()=>{
     const onMenuSelect = (item)=>{
         let type = item.key.split("-")[0]
         if(type === "5" || type === "12"){
-            navigate(`/class-detail/${classId}/${courseId}/courseware/${item.keyPath[1]}/${item.key.split("-")[1]}`);
+            navigate(`/class-detail/${classId}/${courseId}/courseware/${item.keyPath[1]}/${type}/${item.key.split("-")[1]}`);
         }else{
             navigate(`/class-detail/${classId}/${courseId}/activity/${item.key.split('-')[0]}/${item.key.split('-')[1]}`)
         }
+        console.log(`${item.key}`);
     }
     useEffect(()=>{
         fetchChapterInfo();
     },[])
     return (
-        <Menu className="class-content-left-menu" selectedKeys={[docId]} openKeys={details.map((item)=>item.chapterId)} items={items} onSelect={onMenuSelect} mode="inline"/>
-    )
+      <Menu
+        className="class-content-left-menu"
+        selectedKeys={[`${type}-${docId}`]}
+        openKeys={details.map((item) => item.chapterId)}
+        items={items}
+        onSelect={onMenuSelect}
+        mode="inline"
+      />
+    );
 }
 
 const ClassActivityList = ()=>{

@@ -25,7 +25,7 @@ const router = createHashRouter([
   },
   {
     path: "/classes",
-    element: <LearningIndexPage />
+    element: <LearningIndexPage />,
   },
   {
     path: "/class-detail/:classId/:courseId",
@@ -34,34 +34,34 @@ const router = createHashRouter([
     children: [
       {
         path: "courseware",
-        element: <ClassCourseWareActivityPage/>,
+        element: <ClassCourseWareActivityPage />,
         children: [
           {
-            path: ":chapterId/:docId",
-            element: <ClassCoursewareResPage/>
-          }
-        ]
+            path: ":chapterId/:type/:docId",
+            element: <ClassCoursewareResPage />,
+          },
+        ],
       },
       {
         path: "info",
-        element: <ClassInfoPage/>
+        element: <ClassInfoPage />,
       },
       {
         path: "activity",
-        element: <ClassCourseWareActivityPage/>,
+        element: <ClassCourseWareActivityPage />,
         children: [
           {
             path: ":type/:actId",
-            element: <ClassActivityPage/>
-          }
-        ]
+            element: <ClassActivityPage />,
+          },
+        ],
       },
       {
         path: "statistic",
-        element: <ClassStatisticPage/>
-      }
-    ]
-  }
+        element: <ClassStatisticPage />,
+      },
+    ],
+  },
 ]);
 
 export default router;
