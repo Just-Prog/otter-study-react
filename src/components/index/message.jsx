@@ -11,6 +11,7 @@ import PROJECT_HELPER from "@/assets/icons/message/icon-project-helper.png";
 import PROJECT_PUSH from "@/assets/icons/message/icon-project-push.png";
 import RECRUIT_INVITE from "@/assets/icons/message/icon-recruit-push.png";
 import {activityDesc, fileExt2Icons} from "@/components/common/otter_common_define.js";
+import { useNavigate } from "react-router";
 
 const msgType = {
     EXAM_NOTICE: {
@@ -67,6 +68,7 @@ function MessageNotifyIcon({style}) {
         let resp = await api.get('/tac/teaching-msg/v1/tab');
         setMsgList(resp.data);
     }
+    const nav = useNavigate();
     const fetchMsgDetail = async (item) => {
         try{
             pageNum.current ++;
@@ -98,7 +100,9 @@ function MessageNotifyIcon({style}) {
     }
     const handleMainClose = () => {
         setOpen(false);
-        setDetailList([]);
+        setTimeout(() => {
+            setDetailList([]);
+        }, 0);
     }
     const handleDetailOpen = async (item) => {
         await fetchMsgDetail(item);
@@ -107,9 +111,11 @@ function MessageNotifyIcon({style}) {
     }
     const handleDetailClose = () => {
         setDetailOpen(false);
-        setDetailList([]);
-        setDetailInfo({});
-        pageNum.current = 0;
+        setTimeout(() => {
+            setDetailList([]);
+            setDetailInfo({});
+            pageNum.current = 0;
+        }, 0);
     }
     useEffect(() => {
         fetchUnreadCount();
@@ -166,10 +172,21 @@ function MessageNotifyIcon({style}) {
                                   <span style={{fontSize: "14px", textAlign: "center", padding: "5px 10px", borderRadius: "10px", background: "#ddd", color: "#fff"}}>{item.date}</span>
                               </div>
                               { item.data.map((item, index) => (
-                                  <Card title={<div style={{display: "flex", alignItems: "center", width: "100%"}}>
-                                      <img src={item.type !== 5 ? activityDesc[item.type].icon : fileExt2Icons(item.typeStr)} height={24} style={{marginRight: "10px"}} />
-                                      <span>{activityDesc[item.type].name}</span>
-                                  </div>}>
+                                    <Card
+                                        title={<div style={{display: "flex", alignItems: "center", width: "100%"}}>
+                                            <img src={item.type !== 5 ? activityDesc[item.type].icon : fileExt2Icons(item.typeStr)} height={24} style={{marginRight: "10px"}} />
+                                            <span>{activityDesc[item.type].name}</span>
+                                        </div>}
+                                        onClick={()=>{
+                                            handleDetailClose();
+                                            handleMainClose();
+                                            if(item.type === 5 || item.type === 12){
+                                                nav(`/class-detail/${item.classId}/${item.courseId}/courseware/${item.chapterId}/${item.type}/${item.contentId}`);
+                                            }else{
+                                                nav(`/class-detail/${item.classId}/${item.courseId}/activity/${item.type}/${item.contentId}`)
+                                            }
+                                        }}
+                                    >
                                       <span style={{fontSize: "13px"}}>
                                           {item.remark}
                                       </span>
