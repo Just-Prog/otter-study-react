@@ -5,7 +5,13 @@ import ErrorPage from "@/pages/error.jsx";
 import IndexPage from "@/pages/index/index.jsx";
 import UserLoginPage from "@/pages/user/login.jsx";
 import LearningIndexPage from "@/pages/index/learning/learning.jsx";
-import ClassDetailPage from "@/pages/class/class_detail.jsx";
+import ClassDetailPage, {
+  ClassCourseWareActivityPage,
+  ClassInfoPage,
+  ClassStatisticPage,
+  ClassActivityPage,
+} from "@/pages/class/class_detail.jsx";
+import ClassCoursewareResPage from "@/components/class/courseware.jsx";
 
 const router = createHashRouter([
   {
@@ -28,19 +34,31 @@ const router = createHashRouter([
     children: [
       {
         path: "courseware",
-        element: <div>coursewarepage</div>
+        element: <ClassCourseWareActivityPage/>,
+        children: [
+          {
+            path: ":chapterId/:docId",
+            element: <ClassCoursewareResPage/>
+          }
+        ]
       },
       {
         path: "info",
-        element: <div>infopage</div>
+        element: <ClassInfoPage/>
       },
       {
         path: "activity",
-        element: <div>activitypage</div>
+        element: <ClassCourseWareActivityPage/>,
+        children: [
+          {
+            path: ":type/:actId",
+            element: <ClassActivityPage/>
+          }
+        ]
       },
       {
         path: "statistic",
-        element: <div>statisticpage</div>
+        element: <ClassStatisticPage/>
       }
     ]
   }

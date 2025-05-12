@@ -1,0 +1,23 @@
+.class-content-left{
+    background: whitesmoke;
+    border-right: #eeeeee 2px solid;
+}
+
+.class-content-left-card > .ant-card-body{
+    max-height: 100%;
+}
+
+.class-content-left-tabs{
+    max-height: calc(65vh - 46px - 16px);
+    width: 100%;
+}
+
+.class-content-left-tabs .ant-tabs-content-holder{
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+.class-content-left-menu{
+    border-inline-end: none !important;
+}
