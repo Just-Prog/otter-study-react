@@ -67,7 +67,7 @@ const ClassChapterList = ()=>{
     const docId = params.docId ?? params.actId ?? 0;
     const type = params.type ?? 5;
     const navigate = useNavigate();
-    const {classId, courseId} = useContext(ClassDetailContext);
+    const {classId, courseId} = params;
     const [details, setDetails] = useState([]);
     const fetchChapterInfo = async()=>{
         setDetails((await api.post('/tac/teachActivity/v1/chapterDetails',{
@@ -123,7 +123,7 @@ const ClassActivityList = ()=>{
     const params = useParams();
     const activityId = `${params.type}-${params.actId}`;
     const nav = useNavigate();
-    const {classId, courseId} = useContext(ClassDetailContext);
+    const {classId, courseId} = params;
     const [details, setDetails] = useState([]);
     const fetchActivityInfo = async()=>{
         setDetails((await api.get(`/tac/class/v1/stu/activities/${classId}`,{params: {
@@ -177,10 +177,6 @@ const ClassInfoPage = ()=>{
 const ClassMainPage = () => {
     const params = useParams();
     const [courseData, setCourseData] = useState({});
-    const [classData, setClassData] = useState({
-        classId: params.classId,
-        courseId: params.courseId,
-    });
     const fetchClassInfo = async()=>{
         let resp = await api.post("/tac/class/classInfo",{classId: params.classId});
         setCourseData(resp.data);
@@ -191,6 +187,7 @@ const ClassMainPage = () => {
     const isRootRoute = useMatch({ path: '/class-detail/:classId/:courseId', end: true });
     const isChildRoute = useMatch({ path: '/class-detail/:classId/:courseId/', end: false }) && !isRootRoute;
     useEffect(() => {
+        setLoading(true)
         if(isChildRoute){
             fetchClassInfo().then(()=>{
                 setLoading(false);
@@ -198,10 +195,10 @@ const ClassMainPage = () => {
         }else{
             fetchClassInfo().then(()=>{
                 setLoading(false);
-                nav(`/class-detail/${classData.classId}/${classData.courseId}/courseware`);
+                nav(`/class-detail/${params.classId}/${params.courseId}/courseware`);
             });
         }
-    }, [isRootRoute]);
+    }, [isRootRoute,params.classId,params.courseId]);
     return (
         <IndexFrame>
             {loading
@@ -219,9 +216,7 @@ const ClassMainPage = () => {
                             </div>
                         </div>
                     </Card>
-                    <ClassDetailContext value={classData}>
-                        <Outlet/>
-                    </ClassDetailContext>
+                    <Outlet/>
                 </div>
             }
         </IndexFrame>
