@@ -148,7 +148,7 @@ function IndexFrame({children, showSider = false}) {
             </div>
             <div id="layoutHeaderMain">
               <div className="logo">
-                <img src={logo} height="52" />
+                <img src={logo} height="52" onClick={()=>{nav("/")}}/>
               </div>
               <div id="layoutAvatar">
                 <NavBarRight />
