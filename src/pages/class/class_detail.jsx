@@ -1,6 +1,6 @@
 import {IndexFrame} from "@/pages/index/index.jsx";
 import {Outlet, useLocation, useMatch, useParams} from "react-router";
-import {Alert, Card, Col, Layout, Menu, Row, Spin, Tabs} from "antd";
+import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs} from "antd";
 import {createContext, useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {useNavigate} from "react-router-dom";
@@ -10,25 +10,22 @@ import {fileExt2Icons, activityDesc} from "@/components/common/otter_common_defi
 import ClassHomeworkComponent from "@/components/class/homework.jsx";
 import ClassSignInComponent from "@/components/class/sign_in.jsx";
 
-const ClassDetailContext = createContext({
-    classId: -1,
-    courseId: -1
-});
-
+const ClassCourseWareDataContext = createContext();
 const ClassCourseWareActivityPage = ()=>{
     const isActivityMatched = useMatch({path: "/class-detail/:classId/:courseId/activity", end: false})
-    const params = useParams();
-    const type = params.type;
+    const [current, setCurrent] = useState({});
     const tabBarItems = [
         {
             key: 'chapters',
             label: '章节',
-            children: <ClassChapterList/>
+            children: <ClassChapterList/>,
+            forceRender: true
         },
         {
             key: 'activity',
             label: '活动',
-            children: <ClassActivityList/>
+            children: <ClassActivityList/>,
+            forceRender: true
         },
     ]
     return (
@@ -36,11 +33,15 @@ const ClassCourseWareActivityPage = ()=>{
             <Row gutter={[12,12]}>
                 <Col lg={8} xs={24}>
                     <Card className="class-content-left-card" style={{position: "sticky", top: 80, height: "65vh", maxHeight: "65vh"}}>
-                        <Tabs defaultActiveKey={(isActivityMatched && type == 4) ? "activity" : "chapters"} items={tabBarItems} className="class-content-left-tabs"/>
+                        <ClassCourseWareDataContext.Provider value={{current,setCurrent}}>
+                            <Tabs defaultActiveKey={(isActivityMatched) ? "activity" : "chapters"} items={tabBarItems} className="class-content-left-tabs"/>
+                        </ClassCourseWareDataContext.Provider>
                     </Card>
                 </Col>
                 <Col lg={16} xs={24}>
-                    <Outlet />
+                    <ClassCourseWareDataContext.Provider value={{current,setCurrent}}>
+                        <Outlet/>
+                    </ClassCourseWareDataContext.Provider>
                 </Col>
             </Row>
         </>
@@ -53,26 +54,61 @@ const ClassActivityType = {
 }
 
 const ClassActivityPage = () => {
-    const params = useParams();
-    const type = params.type ?? -1;
+    const dataContext = useContext(ClassCourseWareDataContext);
+    const data = dataContext.current;
+    const type = dataContext.current?.type ?? -1;
+    const publishTime = new Date(Number.parseInt(data?.publishTime ?? 0));
+    const formatter = new Intl.DateTimeFormat("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
     return (
         <>
-            {ClassActivityType[type] ?? "Unavailable"}
+            <Card>
+                <Space>
+                    <div style={{marginRight: 8}}>
+                        <img width={"40"} src={activityDesc[data.type ?? -1].icon} />
+                    </div>
+                    <Space direction={"vertical"} align={"start"}>
+                        <span style={{fontSize: "18px", fontWeight: "bold"}}>{data?.name}</span>
+                        <span>
+                            <span style={{marginRight: "8px"}}>发布时间: {`${formatter.format(publishTime)}`}</span>
+                        </span>
+                    </Space>
+                </Space>
+            </Card>
+
+            <div style={{marginTop: 16}}>
+                {ClassActivityType[type] ?? <></>}
+            </div>
         </>
     );
 }
 
 const ClassChapterList = ()=>{
+    const dataContext = useContext(ClassCourseWareDataContext);
     const params = useParams();
-    const docId = params.docId ?? params.actId ?? 0;
-    const type = params.type ?? 5;
     const navigate = useNavigate();
     const {classId, courseId} = params;
     const [details, setDetails] = useState([]);
     const fetchChapterInfo = async()=>{
-        setDetails((await api.post('/tac/teachActivity/v1/chapterDetails',{
+        let resp = await api.post('/tac/teachActivity/v1/chapterDetails',{
             classId: classId, courseId: courseId
-        })).data)
+        });
+        
+        if(params.docId || params.actId){
+            let data = resp.data
+            data = data.map(i=>i.chapterDetailEntityList).flat(1).map(i=>i.teachContentResList).flat(1).find(i=>i.dataId === params.docId || i.dataId === params.actId)
+            if(typeof(data) !== "undefined"){
+                dataContext.setCurrent(data)
+            }
+        }
+        setDetails(resp.data);
     }
     const items = details.map((item)=>{
         return {
@@ -88,7 +124,7 @@ const ClassChapterList = ()=>{
                         return {
                             key: `${res.type}-${res.dataId}`,
                             label: res.name,
-                            icon: <img src={res.type === 5 ? fileExt2Icons(res.typeStr) : activityDesc[res.type].icon} height={18} alt=""/>
+                            icon: <img src={res.type === 5 ? fileExt2Icons(res.typeStr) : activityDesc[res.type].icon} height={18} alt=""/>,
                         }
                     }),
                 }
@@ -98,37 +134,48 @@ const ClassChapterList = ()=>{
     const onMenuSelect = (item)=>{
         let type = item.key.split("-")[0]
         if(type === "5" || type === "12"){
-            navigate(`/class-detail/${classId}/${courseId}/courseware/${item.keyPath[1]}/${type}/${item.key.split("-")[1]}`);
+            navigate(`/class-detail/${classId}/${courseId}/courseware/${item.key.split("-")[1]}`);
         }else{
-            navigate(`/class-detail/${classId}/${courseId}/activity/${item.key.split('-')[0]}/${item.key.split('-')[1]}`)
+            navigate(`/class-detail/${classId}/${courseId}/activity/${item.key.split('-')[1]}`)
         }
-        console.log(`${item.key}`);
+        setTimeout(()=> {
+            dataContext.setCurrent((details.find(i=>i.chapterId === item.keyPath[1])).chapterDetailEntityList.map(i=>i.teachContentResList).flat(Infinity).find(i=>i.dataId === item.key.split('-')[1]));
+        },100)
     }
     useEffect(()=>{
         fetchChapterInfo();
     },[])
     return (
-      <Menu
-        className="class-content-left-menu"
-        selectedKeys={[`${type}-${docId}`]}
-        openKeys={details.map((item) => item.chapterId)}
-        items={items}
-        onSelect={onMenuSelect}
-        mode="inline"
-      />
+        <Menu
+            className="class-content-left-menu"
+            selectedKeys={[`${dataContext.current?.type}-${dataContext.current?.dataId}`]}
+            openKeys={details.map((item) => item.chapterId)}
+            items={items}
+            onSelect={onMenuSelect}
+            mode="inline"
+        />
     );
 }
 
 const ClassActivityList = ()=>{
+    const dataContext = useContext(ClassCourseWareDataContext);
     const params = useParams();
-    const activityId = `${params.type}-${params.actId}`;
     const nav = useNavigate();
     const {classId, courseId} = params;
     const [details, setDetails] = useState([]);
     const fetchActivityInfo = async()=>{
-        setDetails((await api.get(`/tac/class/v1/stu/activities/${classId}`,{params: {
-                classId: classId
-            }})).data)
+        let resp = await api.get(`/tac/class/v1/stu/activities/${classId}`,{params: {
+            classId: classId
+        }});
+        
+        if(params.docId || params.actId){
+            let data = resp.data
+            data = data.map(i=>i.list).flat(1).find(i=>i.id === params.actId || i.id === params.docId)
+            if(typeof(data) !== "undefined"){
+                dataContext.setCurrent(data)
+            }
+        }
+        setDetails(resp.data);
     }
     useEffect(()=>{
         fetchActivityInfo();
@@ -150,12 +197,15 @@ const ClassActivityList = ()=>{
     const onMenuSelect = (item)=>{
         let type = item.key.split("-")[0]
         if(type === "5" || type === "12"){
-            nav(`/class-detail/${classId}/${courseId}/courseware/${item.keyPath[1]}/${item.key.split("-")[1]}`);
+            nav(`/class-detail/${classId}/${courseId}/courseware/${item.key.split("-")[1]}`);
         }else{
-            nav(`/class-detail/${classId}/${courseId}/activity/${item.key.split('-')[0]}/${item.key.split('-')[1]}`)
+            nav(`/class-detail/${classId}/${courseId}/activity/${item.key.split('-')[1]}`)
         }
+        setTimeout(()=>{
+            dataContext.setCurrent(details.map(i=>i.list).flat(1).find(i=>i.id === item.key.split("-")[1]))
+        },100)
     }
-    return <Menu className="class-content-left-menu" selectedKeys={[activityId]} items={items} onSelect={onMenuSelect} mode="inline"/>
+    return <Menu className="class-content-left-menu" selectedKeys={[`${dataContext.current?.type ?? 0}-${dataContext.current?.dataId ?? 0}`]} items={items} onSelect={onMenuSelect} mode="inline"/>
 }
 
 const ClassStatisticPage = ()=>{
@@ -225,4 +275,4 @@ const ClassMainPage = () => {
 
 export default ClassMainPage;
 
-export { ClassCourseWareActivityPage, ClassActivityPage, ClassInfoPage, ClassStatisticPage };
+export { ClassCourseWareActivityPage, ClassActivityPage, ClassInfoPage, ClassStatisticPage, ClassCourseWareDataContext };

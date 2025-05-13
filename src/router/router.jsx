@@ -37,7 +37,7 @@ const router = createHashRouter([
         element: <ClassCourseWareActivityPage />,
         children: [
           {
-            path: ":chapterId/:type/:docId",
+            path: ":docId",
             element: <ClassCoursewareResPage />,
           },
         ],
@@ -51,7 +51,7 @@ const router = createHashRouter([
         element: <ClassCourseWareActivityPage />,
         children: [
           {
-            path: ":type/:actId",
+            path: ":actId",
             element: <ClassActivityPage />,
           },
         ],
