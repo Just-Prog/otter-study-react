@@ -61,7 +61,7 @@ const ClassCoursewareResPage = ()=>{
             <Card style={{marginTop: 16, height: "65vh"}} styles={{body: {height: "100%"}}}>
                 {data.size < 104857600 && data.type !== 12
                     ? <iframe src={preview} width={"100%"} height={"100%"} style={{border: "none"}}
-                              allowFullScreen="allowfullscreen" allow="clipboard-read; clipboard-write"/>
+                              allowFullScreen allow="clipboard-read; clipboard-write"/>
                     : <div>预览不可用</div>
                 }
             </Card>
