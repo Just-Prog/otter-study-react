@@ -3,7 +3,11 @@ import {useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {activityDesc, classTypeDesc, fileExt2Icons} from "@/components/common/otter_common_define.js";
 
+import './css/stu_activities.css'
+import { useNavigate } from "react-router-dom";
+
 function RecentContent() {
+    const nav = useNavigate();
     const [content, setContent] = useState({recentFlag: false});
     const [recentListRes, setRecentListRes] = useState([]);
     const fetchData = async () => {
@@ -27,11 +31,13 @@ function RecentContent() {
                 <Row gutter={[8,4]}>
                     {recentListRes.map((item, index) => {
                         return (
-                            <Col span={"12"} style={{height: "36px", display: "flex", alignItems: "center"}}>
+                            <Col className="stu_content_item" span={"12"} style={{height: "36px", display: "flex", alignItems: "center"}} onClick={()=>{
+                                nav(`/class-detail/${item.recordId}/${item.courseId}/courseware`);
+                            }}>
                                 <span style={{margin: "7px 7px", padding: "3px", borderRadius: "7px", border: "#fc996e solid 1px", fontSize: "12px", color: "#fc996e"}}>{classTypeDesc[item.recordType]}</span>
                                 <span style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1}}>
-                                {item.recordName}
-                            </span>
+                                    {item.recordName}
+                                </span>
                             </Col>
                         )
                     })}
@@ -43,6 +49,7 @@ function RecentContent() {
 
 // TODO 无限翻页处理
 function CourseActivity() {
+    const nav = useNavigate();
     const [content, setContent] = useState([]);
     const [isActivityClosed, setIsActivityClosed] = useState(false);
     const fetchData = async () => {
@@ -56,7 +63,9 @@ function CourseActivity() {
         <Card title={"课内活动"} >
             <div style={{maxHeight: "400px", overflowY: "auto"}}>
                 <List dataSource={content} renderItem={(item,index)=>{
-                    return <List.Item key={index}>
+                    return <List.Item key={index} className="stu_content_item" onClick={()=>{
+                        nav(`/class-detail/${item.classId}/${item.courseId}/activity/${item.sourceId}`)
+                    }}>
                         <Row gutter={5} style={{width:'100%', lineHeight: "20px"}}>
                             <Col span={14}>
                                 <div style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", display: "flex", width: "100%"}}>
@@ -87,6 +96,7 @@ function CourseActivity() {
 
 // TODO 无限翻页处理
 function CoursewareList(){
+    const nav = useNavigate();
     const [content, setContent] = useState([]);
     const fetchData = async () => {
         let res = await api.get("/tac/home-page/course-medium",{params: {
@@ -102,7 +112,9 @@ function CoursewareList(){
         <Card title={"课件"}>
             <div style={{maxHeight: "400px", overflowY: "auto"}}>
                 <List dataSource={content} renderItem={(item,index)=>{
-                    return <List.Item key={index}>
+                    return <List.Item key={index} className="stu_content_item" onClick={()=>{
+                        nav(`/class-detail/${item.classId}/${item.courseId}/courseware/${item.sourceId}`);
+                    }}>
                         <Row gutter={15} style={{width:'100%', lineHeight: "20px"}}>
                             <Col span={10}>
                                 <div style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", display: "flex", width: "100%"}}>
