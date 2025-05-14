@@ -181,9 +181,9 @@ function MessageNotifyIcon({style}) {
                                             handleDetailClose();
                                             handleMainClose();
                                             if(item.type === 5 || item.type === 12){
-                                                nav(`/class-detail/${item.classId}/${item.courseId}/courseware/${item.chapterId}/${item.type}/${item.contentId}`);
+                                                nav(`/class-detail/${item.classId}/${item.courseId}/courseware/${item.contentId}`);
                                             }else{
-                                                nav(`/class-detail/${item.classId}/${item.courseId}/activity/${item.type}/${item.contentId}`)
+                                                nav(`/class-detail/${item.classId}/${item.courseId}/activity/${item.contentId}`)
                                             }
                                         }}
                                     >
