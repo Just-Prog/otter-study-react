@@ -1,4 +1,4 @@
-import {Button, Card, Col, List, Row, Space, Typography} from "antd";
+import {Button, Card, Col, List, Radio, Row, Space, Typography} from "antd";
 import {useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {activityDesc, classTypeDesc, fileExt2Icons} from "@/components/common/otter_common_define.js";
@@ -26,7 +26,9 @@ function RecentContent() {
                     <span style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1}}>
                     {content.dataName ?? "未知文件名"}
                 </span>
-                    <Button type="primary">继续学习</Button>
+                    <Button type="primary" onClick={()=>{
+                        nav(`/class-detail/${content.classId}/${content.courseId}/courseware/${content.dataId}`);
+                    }}>继续学习</Button>
                 </div>) : null}
                 <Row gutter={[8,4]}>
                     {recentListRes.map((item, index) => {
@@ -58,9 +60,16 @@ function CourseActivity() {
     }
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [isActivityClosed]);
     return (
-        <Card title={"课内活动"} >
+        <Card title={"课内活动"} extra={
+            <Radio.Group defaultValue={"ing"} buttonStyle={"solid"} onChange={()=>{
+                setIsActivityClosed(!isActivityClosed);
+            }}>
+                <Radio.Button value={"ing"}>进行中</Radio.Button>
+                <Radio.Button value={"end"}>已结束</Radio.Button>
+            </Radio.Group>
+        }>
             <div style={{maxHeight: "400px", overflowY: "auto"}}>
                 <List dataSource={content} renderItem={(item,index)=>{
                     return <List.Item key={index} className="stu_content_item" onClick={()=>{
@@ -94,22 +103,39 @@ function CourseActivity() {
     )
 }
 
-// TODO 无限翻页处理
 function CoursewareList(){
     const nav = useNavigate();
     const [content, setContent] = useState([]);
-    const fetchData = async () => {
+    const [isRecentUpload, setIsRecentUpload] = useState(true);
+    const fetchRecentUploadData = async () => {
         let res = await api.get("/tac/home-page/course-medium",{params: {
-                pageNo: 1, //TODO
+                pageNo: 1,
                 pageSize: 15
             }});
         setContent(res.data.list)
     }
+    const fetchRecentBrowseData = async () => {
+        let res = await api.get("/tac/home-page/recent-browsing",{params: {
+                pageNo: 1, //TODO
+                pageSize: 15
+            }});
+        setContent(res.data)
+    }
+    const fetchData = async () => {
+        isRecentUpload ? await fetchRecentUploadData() : await fetchRecentBrowseData();
+    }
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [isRecentUpload]);
     return (
-        <Card title={"课件"}>
+        <Card title={"课件"} extra={
+            <Radio.Group defaultValue={"recentpub"} buttonStyle={"solid"} onChange={()=>{
+                setIsRecentUpload(!isRecentUpload);
+            }}>
+                <Radio.Button value={"recentpub"}>最近发布</Radio.Button>
+                <Radio.Button value={"recentbrowse"}>最近浏览</Radio.Button>
+            </Radio.Group>
+        }>
             <div style={{maxHeight: "400px", overflowY: "auto"}}>
                 <List dataSource={content} renderItem={(item,index)=>{
                     return <List.Item key={index} className="stu_content_item" onClick={()=>{
