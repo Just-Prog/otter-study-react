@@ -1,9 +1,11 @@
 import {useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
-import {Button, Card, Space} from "antd";
+import {Button, Card, Space, Spin} from "antd";
 import {ClassCourseWareDataContext} from "@/pages/class/class_detail.jsx";
 import {getReadableFileSizeString} from "@/utils/file_size.js";
 import {fileExt2Icons} from "@/components/common/otter_common_define.js";
+import DPlayer from 'dplayer';
+import Hls from "hls.js";
 
 const ClassCoursewareResPage = ()=>{
     const context = useContext(ClassCourseWareDataContext);
@@ -19,6 +21,12 @@ const ClassCoursewareResPage = ()=>{
         second: "2-digit",
     });
     const [preview, setPreview] = useState("");
+    const [vidInfo, setvidInfo] = useState({
+        videoKey: "",
+        address: "",
+        coverAddress: ""
+    });
+    const [isVideoLoading, setIsVideoLoading] = useState(true);
     const fetchPreview = async() => {
         if(typeof(data?.type) === "undefined" || data?.type === 12){
             return;
@@ -27,15 +35,46 @@ const ClassCoursewareResPage = ()=>{
         setPreview(resp.data.pathKey);
     }
     const downloadCourseware = async() => {
-        var a = document.createElement("a");
+        let a = document.createElement("a");
         a.href = data?.imageUrl;
-        a.download = data?.name;
-        a.target = "_blank";
+        a.download = data?.name ?? `download.${data.typeStr}`;
         a.referrerPolicy = "no-referrer";
         a.click();
     }
+    const fetchVideoInfo = async() => {
+        let resp = await api.get(`/tc/vod/videoAddress/${data.videoKey}`);
+        setvidInfo(resp.data);
+        setIsVideoLoading(false);
+        return resp.data;
+    }
+    let Player = null;
     useEffect(()=>{
-        fetchPreview();
+        if(data.type === 5){
+            fetchPreview();
+        }else if(data.type === 12){
+            fetchVideoInfo().then(r => {
+                setTimeout(()=>{
+                    Player = new DPlayer({
+                        container: document.querySelector("#otterstudy_dp"),
+                        video: {
+                            url: r.address,
+                            type: 'customHls',
+                            customType: {
+                                customHls: function (video, player) {
+                                    const hls = new Hls({});
+                                    let src = video.src.includes("vod.goktech.cn") && import.meta.env.DEV
+                                        ? video.src.replace("vod.goktech.cn/", "/vod/").replace("https://","")
+                                        : video.src
+                                    console.log(src)
+                                    hls.loadSource(src);
+                                    hls.attachMedia(video);
+                                },
+                            },
+                        },
+                    });
+                },600);
+            });
+        }
     },[data?.dataId])
     return (
         <>
@@ -59,10 +98,16 @@ const ClassCoursewareResPage = ()=>{
                 </Space>
             </Card>
             <Card style={{marginTop: 16, height: "65vh"}} styles={{body: {height: "100%"}}}>
-                {data.size < 104857600 && data.type !== 12
-                    ? <iframe src={preview} width={"100%"} height={"100%"} style={{border: "none"}}
+                {data.size < 104857600 && data.type === 5
+                    ? <iframe src={data.typeStr !== "pdf" ? preview : data.imageUrl} width={"100%"} height={"100%"} style={{border: "none"}} referrerPolicy={"no-referrer"}
                               allowFullScreen allow="clipboard-read; clipboard-write"/>
-                    : <div>预览不可用</div>
+                    : (data.type === 12
+                        ? (isVideoLoading
+                            ? <Spin/>
+                            : <div id="otterstudy_dp" style={{height:'100%',width: '100%'}}/>
+                        )
+                        : <div>Unsupported</div>
+                    )
                 }
             </Card>
         </>

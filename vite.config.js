@@ -28,6 +28,15 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/vod": {
+        target: "https://vod.goktech.cn",
+        changeOrigin: true,
+        headers: {
+          referer: "https://edu.goktech.cn/",
+          origin: "https://edu.goktech.cn/",
+        },
+        rewrite: (path) => path.replace(/^\/vod/, ""),
+      },
     },
   },
 });
