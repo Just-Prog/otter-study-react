@@ -205,7 +205,7 @@ const ClassActivityList = ()=>{
             dataContext.setCurrent(details.map(i=>i.list).flat(1).find(i=>i.id === item.key.split("-")[1]))
         },100)
     }
-    return <Menu className="class-content-left-menu" selectedKeys={[`${dataContext.current?.type ?? 0}-${dataContext.current?.dataId ?? 0}`]} items={items} onSelect={onMenuSelect} mode="inline"/>
+    return <Menu className="class-content-left-menu" selectedKeys={[`${dataContext.current?.type ?? 0}-${dataContext.current?.id ?? 0}`]} items={items} onSelect={onMenuSelect} mode="inline"/>
 }
 
 const ClassStatisticPage = ()=>{
