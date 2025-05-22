@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
-import {Button, Card, Space, Spin} from "antd";
+import {Button, Card, message, Space, Spin} from "antd";
 import {ClassCourseWareDataContext} from "@/pages/class/class_detail.jsx";
 import {getReadableFileSizeString} from "@/utils/file_size.js";
 import {fileExt2Icons} from "@/components/common/otter_common_define.js";
@@ -20,6 +20,7 @@ const ClassCoursewareResPage = ()=>{
         minute: "2-digit",
         second: "2-digit",
     });
+    const [messageApi, contextHolder] = message.useMessage();
     const [preview, setPreview] = useState("");
     const [vidInfo, setvidInfo] = useState({
         videoKey: "",
@@ -35,6 +36,10 @@ const ClassCoursewareResPage = ()=>{
         setPreview(resp.data.pathKey);
     }
     const downloadCourseware = async() => {
+        if(data?.type === 12){
+            messageApi.error("不支持")
+            return;
+        }
         let a = document.createElement("a");
         a.href = data?.imageUrl;
         a.download = data?.name ?? `download.${data.typeStr}`;
@@ -47,37 +52,72 @@ const ClassCoursewareResPage = ()=>{
         setIsVideoLoading(false);
         return resp.data;
     }
-    let Player = null;
+    const fetchVideoProgress = async() => {
+        let resp = await api.post("/tac/studentVideo/stuVideoInfo",{
+            videoId: data.dataId,
+            isClass: 1,    // 还有不在课里的？
+            joinType: 0    // 未知，暂时写死
+        });
+        return resp.data.record;
+    }
+    const sendVideoProgress = async(_) => {
+        let resp = await api.post("/tac/studentVideo/addStuVideo",{
+            videoId: data.dataId,
+            isClass: 1,
+            joinType: 0,
+            record: Math.floor(_)
+        });
+        console.log(resp.data);
+        return;
+    }
     useEffect(()=>{
         if(data.type === 5){
             fetchPreview();
         }else if(data.type === 12){
             fetchVideoInfo().then(r => {
+                console.log(r)
                 setTimeout(()=>{
-                    Player = new DPlayer({
+                    const Player = new DPlayer({
                         container: document.querySelector("#otterstudy_dp"),
                         video: {
                             url: r.address,
                             type: 'customHls',
+                            pic: r.coverAddress.includes("vod.goktech.cn") && import.meta.env.DEV
+                                ? r.coverAddress.replace("vod.goktech.cn/", "/vod/").replace("https://","")
+                                : r.coverAddress,
                             customType: {
                                 customHls: function (video, player) {
                                     const hls = new Hls({});
                                     let src = video.src.includes("vod.goktech.cn") && import.meta.env.DEV
                                         ? video.src.replace("vod.goktech.cn/", "/vod/").replace("https://","")
                                         : video.src
-                                    console.log(src)
                                     hls.loadSource(src);
                                     hls.attachMedia(video);
                                 },
                             },
                         },
                     });
+                    Player.on('loadeddata',()=>{
+                        fetchVideoProgress().then(_=>{
+                            Player.seek(_);
+                        });
+                    });
+                    Player.on('play',()=>{
+                        sendVideoProgress(Player.video.currentTime);
+                    });
+                    Player.on('pause',()=>{
+                        sendVideoProgress(Player.video.currentTime);
+                    })
+                    Player.on('seeked',()=>{
+                        sendVideoProgress(Player.video.currentTime);
+                    })
                 },600);
             });
         }
     },[data?.dataId])
     return (
         <>
+            {contextHolder}
             <Card styles={{body:{display: "flex", flexDirection: "row", alignItems: "center"}}}>
                 <div style={{marginRight: 8}}>
                     <img src={fileExt2Icons(data.typeStr)} width={"40"}/>
