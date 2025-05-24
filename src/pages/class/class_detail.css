@@ -21,3 +21,13 @@
 .class-content-left-menu{
     border-inline-end: none !important;
 }
+
+.course_switch_tabs > .ant-tabs-nav, .course_switch_tabs > .ant-tabs-nav::before{
+    border-bottom: unset !important;
+}
+
+@media screen and (max-width: 992px) {
+    .course_switch_tabs > .ant-tabs-nav, .course_switch_tabs > .ant-tabs-nav::before{
+        margin: 0;
+    }
+}

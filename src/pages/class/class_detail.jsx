@@ -1,6 +1,6 @@
 import {IndexFrame} from "@/pages/index/index.jsx";
 import {Outlet, useLocation, useMatch, useParams} from "react-router";
-import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs} from "antd";
+import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs, Radio} from "antd";
 import {createContext, useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {useNavigate} from "react-router-dom";
@@ -9,6 +9,7 @@ import './class_detail.css';
 import {fileExt2Icons, activityDesc} from "@/components/common/otter_common_define.js";
 import ClassHomeworkComponent from "@/components/class/homework.jsx";
 import ClassSignInComponent from "@/components/class/sign_in.jsx";
+import {ContactsOutlined, InfoCircleOutlined, ReadOutlined} from "@ant-design/icons";
 
 const ClassCourseWareDataContext = createContext();
 const ClassCourseWareActivityPage = ()=>{
@@ -217,9 +218,44 @@ const ClassStatisticPage = ()=>{
 }
 
 const ClassInfoPage = ()=>{
+    const [data, setData] = useState({})
     return (
         <>
-            <div>infopage</div>
+            <Row gutter={[12,12]}>
+                <Col lg={8} xs={24}>
+                    <Card
+                        title={
+                            <Space>
+                                <InfoCircleOutlined />
+                                班课信息
+                            </Space>
+                        }
+                        className="class-content-left-card"
+                        style={{position: "sticky", top: 80}}
+                    >
+
+                    </Card>
+                </Col>
+                <Col lg={16} xs={24}>
+                    <Space direction="vertical" style={{ display: 'flex' }}>
+                        <Card title={
+                            <Space>
+                                <ContactsOutlined />
+                                教学团队
+                            </Space>
+                        }>
+
+                        </Card>
+                        <Card title={
+                            <Space>
+                                <ReadOutlined />
+                                学生
+                            </Space>
+                        }>
+                        </Card>
+                    </Space>
+                </Col>
+            </Row>
         </>
     );
 }
@@ -236,6 +272,22 @@ const ClassMainPage = () => {
     const location = useLocation();
     const isRootRoute = useMatch({ path: '/class-detail/:classId/:courseId', end: true });
     const isChildRoute = useMatch({ path: '/class-detail/:classId/:courseId/', end: false }) && !isRootRoute;
+    const isCoursewareRoute = useMatch({ path: '/class-detail/:classId/:courseId/courseware/', end: false });
+    const isActivityRoute = useMatch({ path: '/class-detail/:classId/:courseId/activity/', end: false });
+    const tab_items = [
+        {
+            key: "course",
+            label: "课堂",
+        },
+        {
+            key: "info",
+            label: "简介",
+        },
+        {
+            key: "statistic",
+            label: "统计",
+        },
+    ]
     useEffect(() => {
         setLoading(true)
         if(isChildRoute){
@@ -257,12 +309,29 @@ const ClassMainPage = () => {
                 </Spin>
                 : <div style={{rowGap: "16px", width: "100%", display: "flex", flexDirection: "column"}}>
                     <Card style={{textOverflow: "ellipsis", overflowX: "auto"}}>
-                        <div>
-                            <div style={{fontWeight: "bold", fontSize: "18px"}}>
-                                {courseData.className ?? "Default"} ({courseData.classCode ?? "00AA00"})
+                        <div style={{width: "100%", display: "flex", justifyContent: "space-between", flexDirection: "row", height: "100%", alignItems: "center", flexWrap: "wrap"}}>
+                            <div style={{height: "100%"}}>
+                                <div style={{fontWeight: "bold", fontSize: "18px"}}>
+                                    {courseData.className ?? "Default"} ({courseData.classCode ?? "00AA00"})
+                                </div>
+                                <div style={{fontSize: "15px"}}>
+                                    任课教师: {courseData.teacher ?? "..."}
+                                </div>
                             </div>
-                            <div style={{fontSize: "15px"}}>
-                                任课教师: {courseData.teacher ?? "..."}
+                            <div style={{display:"flex",justifyContent:"right",height:"100%",paddingRight: "10px",paddingLeft: "10px"}}>
+                                <Tabs
+                                    className={"course_switch_tabs"}
+                                    items={tab_items}
+                                    tabBarGutter={40}
+                                    activeKey={isCoursewareRoute || isActivityRoute ? "course" : location.pathname.split('/')[location.pathname.split('/').length - 1]}
+                                    onTabClick={(key)=>{
+                                        if(key === "course"){
+                                            nav(`/class-detail/${params.classId}/${params.courseId}/courseware`);
+                                        }else{
+                                            nav(`/class-detail/${params.classId}/${params.courseId}/${key}`);
+                                        }
+                                    }}
+                                />
                             </div>
                         </div>
                     </Card>
