@@ -1,6 +1,6 @@
 import {IndexFrame} from "@/pages/index/index.jsx";
 import {Outlet, useLocation, useMatch, useParams} from "react-router";
-import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs, Radio} from "antd";
+    import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs, message, Button, Table} from "antd";
 import {createContext, useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {useNavigate} from "react-router-dom";
@@ -10,6 +10,7 @@ import {fileExt2Icons, activityDesc} from "@/components/common/otter_common_defi
 import ClassHomeworkComponent from "@/components/class/homework.jsx";
 import ClassSignInComponent from "@/components/class/sign_in.jsx";
 import {ContactsOutlined, InfoCircleOutlined, ReadOutlined} from "@ant-design/icons";
+import default_cropper from "@/assets/default-cropper.png";
 
 const ClassCourseWareDataContext = createContext();
 const ClassCourseWareActivityPage = ()=>{
@@ -218,43 +219,224 @@ const ClassStatisticPage = ()=>{
 }
 
 const ClassInfoPage = ()=>{
-    const [data, setData] = useState({})
+    const params = useParams();
+    const [messageApi, contextHolder] = message.useMessage();
+    const [loading, setLoading] = useState(true);
+    const [infoData, setInfoData] = useState({});
+    const [teacherData, setTeacherData] = useState([]);
+    const [queryTeacher, setQueryTeacher] = useState("");   //TODO
+    const [stuData, setStuData] = useState([]);
+    const [queryStu, setQueryStu] = useState("");           //TODO
+    const [pageStu, setPageStu] = useState(1);
+    const [totalStu, setTotalStu] = useState(0);
+    const fetchClassInfo = async()=>{
+        setInfoData((await api.post('/tac/class/classInfo',{
+            classId: params.classId,
+        })).data);
+        setLoading(false);
+    }
+    const fetchTeacherInfo = async()=>{
+        let resp = await api.post('/tac/class/queryMember',{
+            classId: params.classId,
+            queryParam: queryTeacher,
+            stuOrTeacher: 1
+        });
+        setTeacherData(resp.data);
+    }
+    const fetchStuInfo = async()=>{
+        let resp = await api.post('/tac/class/queryMember/search',{
+            classId: params.classId,
+            pageNo: pageStu,
+            pageSize: 10,
+            queryParam: queryTeacher,
+            stuOrTeacher: 0
+        });
+        setTotalStu(resp.data.total);
+        setStuData(resp.data.list);
+    }
+    const dataInfo = [
+        {
+            label: "班课名称",
+            data: infoData.className ?? ""
+        },
+        {
+            label: "班课码",
+            data: infoData.classCode ?? ""
+        },
+        {
+            label: "任课教师",
+            data: infoData.teacher ?? ""
+        },
+        {
+            label: "班主任",
+            data: infoData.assistant ?? []
+        },
+        {
+            label: "助教",
+            data: infoData.stuAssistant ?? []
+        },
+        {
+            label: "学员人数",
+            data: infoData.studentNum ?? 0
+        },
+        {
+            label: "课程介绍",
+            data: infoData.brief
+        },
+        {
+            label: "教学目标",
+            data: infoData.teachingAim
+        },
+        {
+            label: "参考资料",
+            data: infoData.referenceMaterial
+        },
+    ]
+    useEffect(()=>{
+        fetchClassInfo();
+    },[]);
+    useEffect(()=>{
+        fetchTeacherInfo();
+    },[queryTeacher]);
+    useEffect(()=>{
+        fetchStuInfo();
+    },[queryStu,pageStu]);
     return (
         <>
+            {contextHolder}
             <Row gutter={[12,12]}>
-                <Col lg={8} xs={24}>
-                    <Card
-                        title={
-                            <Space>
-                                <InfoCircleOutlined />
-                                班课信息
+                {loading
+                    ? <Spin/>
+                    : <>
+                        <Col lg={8} xs={24}>
+                            <Card
+                                title={
+                                    <Space>
+                                        <InfoCircleOutlined />
+                                        班课信息
+                                    </Space>
+                                }
+                                className="class-content-left-card"
+                                style={{position: "sticky", top: 80}}
+                            >
+                                <Space direction="vertical" style={{ display: 'flex' }}>
+                                    <img src={infoData.courseImage.includes("default-cropper") ? default_cropper : infoData.courseImage} width={180} alt={params.classId} style={{borderRadius: "8px"}} referrerPolicy={"no-referrer"} />
+                                    {dataInfo.map((i)=>{
+                                        if(i.data !== "" && i.data.length !== 0){
+                                            return <Row gutter={15} align={"middle"}>
+                                                <Col span={6} style={{textAlign: "right"}}>
+                                                    <b>{i.label}:</b>
+                                                </Col>
+                                                <Col span={18}>
+                                                    {Array.isArray(i.data) ? i.data.join("、") : i.data}
+                                                    {i.label === "班课码"
+                                                        ? <Button type={"primary"} size={"small"} style={{marginLeft: 5}} onClick={async()=>{
+                                                            await navigator.clipboard.writeText(i.data)
+                                                            messageApi.success("已复制")
+                                                        }}>
+                                                            <span color={"default"}>复制</span>
+                                                        </Button>
+                                                        : null}
+                                                </Col>
+                                            </Row>
+                                        }
+                                    })}
+                                </Space>
+                            </Card>
+                        </Col>
+                        <Col lg={16} xs={24}>
+                            <Space direction="vertical" size={"large"} style={{ display: 'flex' }}>
+                                <Card title={
+                                    <Space>
+                                        <ContactsOutlined />
+                                        教学团队
+                                    </Space>
+                                }>
+                                    <Table
+                                        dataSource={
+                                            teacherData.map((v)=>{
+                                               return {
+                                                   key: v.id,
+                                                   nickname: v.nickname,
+                                                   type: v.joinType === 1 ? "任课教师" : "班主任",
+                                                   phone: v.phone,
+                                               };
+                                            })
+                                        }
+                                        columns={[
+                                            {
+                                                title: "姓名",
+                                                dataIndex: "nickname",
+                                                key: "nickname",
+                                            },
+                                            {
+                                                title: "职位",
+                                                dataIndex: "type",
+                                                key: "type",
+                                            },
+                                            {
+                                                title: "电话号码",
+                                                dataIndex: "phone",
+                                                key: "phone",
+                                            }
+                                        ]}
+                                    />
+                                </Card>
+                                <Card title={
+                                    <Space>
+                                        <ReadOutlined />
+                                        学生
+                                    </Space>
+                                }>
+                                    <Table
+                                        dataSource={stuData.map((v)=>{
+                                            return {
+                                                key: v.id,
+                                                nickname: v.nickname,
+                                                type: v.assistantFlag === 1
+                                                        ? "助教"
+                                                        : (v.expFlag === 1
+                                                            ? "体验学员"
+                                                            : (v.attendFlag === 1
+                                                                ? "旁听"
+                                                                : ""
+                                                            )
+                                                        ),
+                                                phone: v.phone,
+                                            };
+                                        })}
+                                        columns={[
+                                            {
+                                                title: "姓名",
+                                                dataIndex: "nickname",
+                                                key: "nickname",
+                                            },
+                                            {
+                                                title: "类别",
+                                                dataIndex: "type",
+                                                key: "type",
+                                            },
+                                            {
+                                                title: "电话号码",
+                                                dataIndex: "phone",
+                                                key: "phone",
+                                            }
+                                        ]}
+                                        pagination={{
+                                            total: totalStu,
+                                            current: pageStu,
+                                            defaultPageSize: 10,
+                                            showSizeChanger: false,
+                                            onChange: (page) => {
+                                                setPageStu(page);
+                                            }
+                                        }}
+                                    />
+                                </Card>
                             </Space>
-                        }
-                        className="class-content-left-card"
-                        style={{position: "sticky", top: 80}}
-                    >
-
-                    </Card>
-                </Col>
-                <Col lg={16} xs={24}>
-                    <Space direction="vertical" style={{ display: 'flex' }}>
-                        <Card title={
-                            <Space>
-                                <ContactsOutlined />
-                                教学团队
-                            </Space>
-                        }>
-
-                        </Card>
-                        <Card title={
-                            <Space>
-                                <ReadOutlined />
-                                学生
-                            </Space>
-                        }>
-                        </Card>
-                    </Space>
-                </Col>
+                        </Col>
+                    </>
+                }
             </Row>
         </>
     );
