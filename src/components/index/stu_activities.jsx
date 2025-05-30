@@ -20,12 +20,12 @@ function RecentContent() {
     }, []);
     return (
         <Card title={"最近访问"}>
-            <Space direction="vertical">
+            <Space direction="vertical" style={{ display: 'flex', width: '100%', maxWidth: '100%' }}>
                 {content.recentFlag ? (<div style={{backgroundColor: "#f6f9ff", borderRadius: "10px", display: "flex", alignItems: "center", padding: "12px"}} >
                     <img src={fileExt2Icons(content.typeStr)} height={20} style={{ marginRight: "10px" }} />
-                    <span style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1}}>
-                    {content.dataName ?? "未知文件名"}
-                </span>
+                    <span style={{flex: 1}}>
+                        {content.dataName ?? "未知文件名"}
+                    </span>
                     <Button type="primary" onClick={()=>{
                         nav(`/class-detail/${content.classId}/${content.courseId}/courseware/${content.dataId}`);
                     }}>继续学习</Button>
