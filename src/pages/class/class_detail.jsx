@@ -98,7 +98,7 @@ const ClassActivityPage = () => {
                             <span style={{marginRight: "8px"}}>发布时间: {`${formatter.format(publishTime)}`}</span>
                             {type !== 4
                                 ? <>
-                                    <span style={{marginRight: "8px", color: current > deadline && deadline.valueOf() !== 0 ? "red" : "#000"}}>{deadline.valueOf() !== 0 ? "结束时间: {`${formatter.format(deadline)}`}" : "手动结束"}</span>
+                                    <span style={{marginRight: "8px", color: current > deadline && deadline.valueOf() !== 0 ? "red" : "#000"}}>{deadline.valueOf() !== 0 ? `结束时间: ${formatter.format(deadline)}` : "手动结束"}</span>
                                     <span style={{marginRight: "8px"}}>{data?.partNum}/{data?.studentNum}人参与</span>
                                     {type === 0
                                         ? <span style={{marginRight: "8px"}}>
