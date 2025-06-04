@@ -1,6 +1,6 @@
 import {IndexFrame} from "@/pages/index/index.jsx";
 import {Outlet, useLocation, useMatch, useParams} from "react-router";
-    import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs, message, Button, Table} from "antd";
+import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs, message, Button, Table} from "antd";
 import {createContext, useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {useNavigate} from "react-router-dom";
@@ -60,6 +60,10 @@ const ClassActivityPage = () => {
     const data = dataContext.current;
     const type = dataContext.current?.type ?? -1;
     const publishTime = new Date(Number.parseInt(data?.publishTime ?? 0));
+    const deadline = new Date(Number.parseInt(data?.deadline ?? 0));
+    const current = new Date();
+    const status  = data?.status ?? 0;
+    const statusText = ["已发布","进行中","已结束"]
     const formatter = new Intl.DateTimeFormat("zh-CN", {
         timeZone: "Asia/Shanghai",
         year: "numeric",
@@ -70,25 +74,49 @@ const ClassActivityPage = () => {
         second: "2-digit",
     });
     return (
-        <>
+        Object.keys(data).length !== 0 ? <>
             <Card>
-                <Space>
+                <Space align={"center"}>
                     <div style={{marginRight: 8}}>
                         <img width={"40"} src={activityDesc[data.type ?? -1].icon} />
                     </div>
-                    <Space direction={"vertical"} align={"start"}>
-                        <span style={{fontSize: "18px", fontWeight: "bold"}}>{data?.name}</span>
-                        <span>
+                    <div style={{display: "flex", alignItems: "start", flexDirection: "column"}}>
+                        <div style={{display: "flex", alignItems: "center"}}>
+                            <span style={{
+                                fontSize: "13px",
+                                border: status === 1 ? "#fc996e 1px solid" : "#000 1px solid",
+                                borderRadius: "3px",
+                                padding: "1px 4px",
+                                color: status === 1 ? "#fc996e" : "#000",
+                                marginRight: "5px"
+                            }}>
+                                {statusText[status]}
+                            </span>
+                            <span style={{fontSize: "18px", fontWeight: "bold"}}>{data?.name}</span>
+                        </div>
+                        <div>
                             <span style={{marginRight: "8px"}}>发布时间: {`${formatter.format(publishTime)}`}</span>
-                        </span>
-                    </Space>
+                            {type !== 4
+                                ? <>
+                                    <span style={{marginRight: "8px", color: current > deadline ? "red" : "#000"}}>结束时间: {`${formatter.format(deadline)}`}</span>
+                                    <span style={{marginRight: "8px"}}>{data?.partNum}/{data?.studentNum}人参与</span>
+                                    {type === 0
+                                        ? <span style={{marginRight: "8px"}}>
+                                            共{data?.homeworkScore}分
+                                        </span>
+                                        : <></>
+                                    }
+                                  </>
+                                : <></>
+                            }
+                        </div>
+                    </div>
                 </Space>
             </Card>
-
             <div style={{marginTop: 16}}>
                 {ClassActivityType[type] ?? <></>}
             </div>
-        </>
+        </> : <Spin/>
     );
 }
 
@@ -172,7 +200,7 @@ const ClassActivityList = ()=>{
         
         if(params.docId || params.actId){
             let data = resp.data
-            data = data.map(i=>i.list).flat(1).find(i=>i.id === params.actId || i.id === params.docId)
+            data = data.map(i=>i.list).flat(1).find(i=>i.dataId === params.actId || i.dataId === params.docId)
             if(typeof(data) !== "undefined"){
                 dataContext.setCurrent(data)
             }
@@ -189,7 +217,7 @@ const ClassActivityList = ()=>{
         type: "group",
         children: item.list.map((i)=>{
             return {
-              key: `${i.type}-${i.id}`,
+              key: `${i.type}-${i.dataId}`,
               label: i.name,
               icon: <img src={activityDesc[i.type].icon} height={18} alt="" />,
             };
@@ -204,10 +232,10 @@ const ClassActivityList = ()=>{
             nav(`/class-detail/${classId}/${courseId}/activity/${item.key.split('-')[1]}`)
         }
         setTimeout(()=>{
-            dataContext.setCurrent(details.map(i=>i.list).flat(1).find(i=>i.id === item.key.split("-")[1]))
+            dataContext.setCurrent(details.map(i=>i.list).flat(1).find(i=>i.dataId === item.key.split("-")[1]))
         },100)
     }
-    return <Menu className="class-content-left-menu" selectedKeys={[`${dataContext.current?.type ?? 0}-${dataContext.current?.id ?? 0}`]} items={items} onSelect={onMenuSelect} mode="inline"/>
+    return <Menu className="class-content-left-menu" selectedKeys={[`${dataContext.current?.type ?? 0}-${dataContext.current?.dataId ?? 0}`]} items={items} onSelect={onMenuSelect} mode="inline"/>
 }
 
 const ClassStatisticPage = ()=>{
