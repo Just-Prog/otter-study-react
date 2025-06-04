@@ -511,6 +511,9 @@ const ClassMainPage = () => {
             });
         }
     }, [isRootRoute,params.classId,params.courseId]);
+    useEffect(() => {
+        document.title = `${courseData.className ?? "加载中..."}-OtterStudy水獭习路`;
+    }, [courseData]);
     return (
         <IndexFrame>
             {loading

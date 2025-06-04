@@ -189,6 +189,9 @@ function IndexPage() {
       return null;
     }
   });
+  useEffect(() => {
+    document.title = "OtterStudy";
+  }, []);
   if (!isLogined)
     return (
         <>

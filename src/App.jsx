@@ -7,10 +7,14 @@ import router from '@/router/router.jsx';
 import userStore, { checkLoginStatus } from '@/stores/user'
 
 import "subsetted-fonts/MiSans-VF/MiSans-VF.css";
+import FAVICON from '@/assets/favicon.svg';
 
 const app = () => {
     useEffect(() => {
         userStore.dispatch(checkLoginStatus());
+        document.title = "OtterStudy";
+        let $favicon = document.querySelector('link[rel="icon"]');
+        $favicon.href = FAVICON;
     }, []);
 
     return (
