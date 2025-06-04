@@ -1,10 +1,24 @@
 import { useParams } from "react-router";
-import { Card, Pagination, Table } from "antd";
-import { useEffect, useState } from "react";
+import {Card, Pagination, Space, Table} from "antd";
+import {useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
+import {ClassCourseWareDataContext} from "@/pages/class/class_detail.jsx";
+
+import SIGN_SUCCESS from "@/assets/sign/sign-success.png";
+import SIGN_FAILED from "@/assets/sign/sign-fail.png";
+
+const absenceDesc = {
+  EL: "早退",
+  LT: "迟到",
+  IL: "病假",
+  PL: "事假",
+  AB: "缺勤"
+}
 
 const ClassSignInComponent = () => {
   const params = useParams();
+  const dataContext = useContext(ClassCourseWareDataContext);
+  const dataContextData = dataContext.current;
   const [pageNo, setPageNo] = useState(1);
   const pageLimit = 10;
   const [total, setTotal] = useState(0);
@@ -81,6 +95,17 @@ const ClassSignInComponent = () => {
           body: { display: "flex", flexDirection: "column", maxHeight: "100%" },
         }}
       >
+        <div style={{marginBottom: "15px",width: "100%",textAlign: "center"}}>
+          <Space direction={"vertical"} style={{display: "flex"}}>
+            <img src={dataContextData.isParted === "1" ? SIGN_SUCCESS : SIGN_FAILED} height={"225px"}/>
+            {dataContextData.isParted === "1"
+                ? <span>您已签到</span>
+                : <span style={{color: "red"}}>
+                  未签到，原因：{absenceDesc[dataContextData.absenceType !== "" ? dataContextData.absenceType : "AB"]}
+                </span>
+            }
+          </Space>
+        </div>
         <Table
           dataSource={dataSource}
           columns={columns}
