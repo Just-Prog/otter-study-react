@@ -24,7 +24,8 @@
     "react-redux": "^9.2.0",
     "react-router": "^7.5.0",
     "react-router-dom": "^7.5.0",
-    "redux-thunk": "^3.1.0"
+    "redux-thunk": "^3.1.0",
+    "subsetted-fonts": "^1.0.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
