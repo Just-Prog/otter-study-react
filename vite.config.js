@@ -37,6 +37,15 @@ export default defineConfig({
         },
         rewrite: (path) => path.replace(/^\/vod/, ""),
       },
+      "/obs": {
+        target: "https://obs.goktech.cn",
+        changeOrigin: true,
+        headers: {
+          referer: "https://edu.goktech.cn/",
+          origin: "https://edu.goktech.cn/",
+        },
+        rewrite: (path) => path.replace(/^\/obs/, ""),
+      },
     },
   },
 });
