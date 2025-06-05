@@ -174,21 +174,28 @@ function MessageNotifyIcon({style}) {
                               { item.data.map((item, index) => (
                                     <Card
                                         title={<div style={{display: "flex", alignItems: "center", width: "100%"}}>
-                                            <img src={item.type !== 5 ? activityDesc[item.type].icon : fileExt2Icons(item.typeStr)} height={24} style={{marginRight: "10px"}} />
-                                            <span>{activityDesc[item.type].name}</span>
+                                            <img src={item.type !== -1
+                                                ? (item.type !== 5
+                                                    ? activityDesc[item.type].icon
+                                                    : fileExt2Icons(item.typeStr))
+                                                : msgType[detailInfo.msgCategory ?? "SYSTEM_NOTICE"].icon ?? ""
+                                            } height={24} style={{marginRight: "10px"}}/>
+                                            <span>{item.type !== -1 ? activityDesc[item.type].name : item.title}</span>
                                         </div>}
                                         onClick={()=>{
-                                            handleDetailClose();
-                                            handleMainClose();
-                                            if(item.type === 5 || item.type === 12){
-                                                nav(`/class-detail/${item.classId}/${item.courseId}/courseware/${item.contentId}`);
-                                            }else{
-                                                nav(`/class-detail/${item.classId}/${item.courseId}/activity/${item.contentId}`)
+                                            if(item.type !== -1){
+                                                if(item.type === 5 || item.type === 12){
+                                                    nav(`/class-detail/${item.classId}/${item.courseId}/courseware/${item.contentId}`);
+                                                }else{
+                                                    nav(`/class-detail/${item.classId}/${item.courseId}/activity/${item.contentId}`)
+                                                }
+                                                handleDetailClose();
+                                                handleMainClose();
                                             }
                                         }}
                                     >
                                       <span style={{fontSize: "13px"}}>
-                                          {item.remark}
+                                          {item.remark !== "" ? item.remark : item.contentName}
                                       </span>
                                   </Card>
                               )) }
