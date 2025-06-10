@@ -1,6 +1,6 @@
 import {IndexFrame} from "@/pages/index/index.jsx";
 import {Outlet, useLocation, useMatch, useParams} from "react-router";
-import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs, message, Button, Table} from "antd";
+import {Alert, Card, Col, Menu, Row, Space, Spin, Tabs, message, Button, Table, Divider, Statistic, Descriptions, Progress} from "antd";
 import {createContext, useContext, useEffect, useState} from "react";
 import api from "@/api/api.jsx";
 import {useNavigate} from "react-router-dom";
@@ -11,6 +11,14 @@ import ClassHomeworkComponent from "@/components/class/homework.jsx";
 import ClassSignInComponent from "@/components/class/sign_in.jsx";
 import {ContactsOutlined, InfoCircleOutlined, ReadOutlined} from "@ant-design/icons";
 import default_cropper from "@/assets/default-cropper.png";
+import userStore from "@/stores/user.jsx";
+
+import ASSET_VIDEO from "@/assets/icons/files/icon-video.png";
+import ASSET_OTHER from "@/assets/icons/files/icon-other.png";
+import ASSET_TEST from "@/assets/icons/activity/icon-test.png";
+import ASSET_HOMEWORK from "@/assets/icons/activity/icon-homework.png";
+import ASSET_PRACTICE from "@/assets/icons/activity/icon-practive.png";
+import ASSET_SIGNIN from "@/assets/icons/activity/icon-sign-in.png";
 
 const ClassCourseWareDataContext = createContext();
 const ClassCourseWareActivityPage = ()=>{
@@ -239,9 +247,192 @@ const ClassActivityList = ()=>{
 }
 
 const ClassStatisticPage = ()=>{
+    const stuId = userStore.getState().user.info.tenants[0].memberId;
+    const params = useParams();
+    const [loading, setLoading] = useState(true);
+    const [signItemRes, setSignItemRes] = useState({});
+    const [videoPlayStatus, setVideoPlayStatus] = useState({
+        play: {}, time: {}
+    });
+    const [coursewareStatus, setCoursewareStatus] = useState({});
+    const [testTaskStatus, setTestTaskStatus] = useState({});
+    const [homeworkStatus, setHomeworkStatus] = useState({});
+    const [activityStatus, setActivityStatus] = useState({});
+    const [practiceStatus, setPracticeStatus] = useState({});
+    const fetchStatisticBasicData = async ()=>{
+        let resp = await api.get(`/reports/v1/statistics/student-rank/${stuId}`,{params:{
+            classId: params.classId,
+            }});
+        setSignItemRes(resp.data.signItemRes);
+        setVideoPlayStatus({play: resp.data.videoPlay, time: resp.data.watchTime});
+        setCoursewareStatus(resp.data.courseWare);
+        setTestTaskStatus(resp.data.testTask);
+        setHomeworkStatus(resp.data.homework);
+        setActivityStatus(resp.data.activity);
+        setPracticeStatus(resp.data.practice);
+        setLoading(false);
+    }
+    useEffect(()=>{
+        fetchStatisticBasicData();
+    },[])
     return (
         <>
-            <div>statisticpage</div>
+            {
+                loading
+                ? <Spin/>
+                : <Space style={{display: "flex"}} direction={"vertical"} size={"middle"}>
+                    <Divider orientation="left">不积跬步无以至千里</Divider>
+                    <Card style={{width: "100%"}} title={"签到数据"}>
+                        <div style={{display: "flex", flexDirection: "row"}}>
+                            <Statistic title={<b>签到</b>} value={signItemRes.signCount ?? -1} style={{flex: "1"}}/>
+                            <Statistic title={<b>迟到</b>} value={signItemRes.ltCount ?? -1} style={{flex: "1"}}/>
+                            <Statistic title={<b>早退</b>} value={signItemRes.elCount ?? -1} style={{flex: "1"}}/>
+                            <Statistic title={<b>事假</b>} value={signItemRes.plCount ?? -1} style={{flex: "1"}}/>
+                            <Statistic title={<b>病假</b>} value={signItemRes.ilCount ?? -1} style={{flex: "1"}}/>
+                            <Statistic
+                                title={(<span style={{color: "red"}}><b>缺勤</b></span>)}
+                                value={signItemRes.unsignCount ?? -1}
+                                style={{flex: "1"}}
+                                valueStyle={{color: signItemRes.unsignCount && signItemRes.unsignCount !== 0 ? "red" : "black"}}
+                            />
+                        </div>
+                    </Card>
+                    <Divider orientation="left">不积小流无以成江海</Divider>
+                    <Row gutter={[16,16]}>
+                        <Col xs={24} lg={12}>
+                            <Card title={<span style={{display: "flex", alignItems: "center"}}>
+                                <img src={ASSET_VIDEO} height={18} alt="" style={{marginRight: "5px"}}/>
+                                视频学习
+                            </span>}>
+                                <Row gutter={[16,16]}>
+                                    <Col xs={24} lg={18}>
+                                        <b>播放个数 ({videoPlayStatus.play.count}/{videoPlayStatus.play.total})</b>
+                                        <Progress percent={videoPlayStatus.play.percent} style={{flex:1}} />
+                                    </Col>
+                                    <Col xs={24} lg={6}>
+                                        <div style={{display: "flex", alignItems: "center", height: "100%"}}>
+                                            <span>
+                                                班级排名: <b>{videoPlayStatus.play.rankString}</b>
+                                            </span>
+                                        </div>
+                                    </Col>
+                                    <Col xs={24} lg={18}>
+                                        <b>观看时长 ({(videoPlayStatus.time.count / 60).toFixed(1)}/{(videoPlayStatus.time.total / 60).toFixed(1)}分钟)</b>
+                                        <Progress percent={videoPlayStatus.time.percent} style={{flex:1}} />
+                                    </Col>
+                                    <Col xs={24} lg={6}>
+                                        <div style={{display: "flex", alignItems: "center", height: "100%"}}>
+                                            <span>
+                                                班级排名: <b>{videoPlayStatus.time.rankString}</b>
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                        <Col xs={24} lg={12}>
+                            <Card title={<span style={{display: "flex", alignItems: "center"}}>
+                                <img src={ASSET_OTHER} height={18} alt="" style={{marginRight: "5px"}}/>
+                                非视频学习
+                            </span>}>
+                                <Row gutter={[16,16]}>
+                                    <Col xs={24} lg={18}>
+                                        <b>课件学习 ({coursewareStatus.count}/{coursewareStatus.total})</b>
+                                        <Progress percent={coursewareStatus.percent} style={{flex:1}} />
+                                    </Col>
+                                    <Col xs={24} lg={6}>
+                                        <div style={{display: "flex", alignItems: "center", height: "100%"}}>
+                                            <span>
+                                                班级排名: <b>{coursewareStatus.rankString}</b>
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                        <Col xs={24} lg={12}>
+                            <Card title={<span style={{display: "flex", alignItems: "center"}}>
+                                <img src={ASSET_TEST} height={18} alt="" style={{marginRight: "5px"}}/>
+                                测试
+                            </span>}>
+                                <Row gutter={[16,16]}>
+                                    <Col xs={24} lg={18}>
+                                        <b>提交次数 ({testTaskStatus.count}/{testTaskStatus.total})</b>
+                                        <Progress percent={testTaskStatus.percent} style={{flex:1}} />
+                                    </Col>
+                                    <Col xs={24} lg={6}>
+                                        <div style={{display: "flex", alignItems: "center", height: "100%"}}>
+                                            <span>
+                                                班级排名: <b>{testTaskStatus.rankString}</b>
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                        <Col xs={24} lg={12}>
+                            <Card title={<span style={{display: "flex", alignItems: "center"}}>
+                                <img src={ASSET_HOMEWORK} height={18} alt="" style={{marginRight: "5px"}}/>
+                                作业
+                            </span>}>
+                                <Row gutter={[16,16]}>
+                                    <Col xs={24} lg={18}>
+                                        <b>提交次数 ({homeworkStatus.count}/{homeworkStatus.total})</b>
+                                        <Progress percent={homeworkStatus.percent} style={{flex:1}} />
+                                    </Col>
+                                    <Col xs={24} lg={6}>
+                                        <div style={{display: "flex", alignItems: "center", height: "100%"}}>
+                                            <span>
+                                                班级排名: <b>{homeworkStatus.rankString}</b>
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                        <Col xs={24} lg={12}>
+                            <Card title={<span style={{display: "flex", alignItems: "center"}}>
+                                <img src={ASSET_PRACTICE} height={18} alt="" style={{marginRight: "5px"}}/>
+                                练习
+                            </span>}>
+                                <Row gutter={[16,16]}>
+                                    <Col xs={24} lg={18}>
+                                        <b>参与次数 ({practiceStatus.count}/{practiceStatus.total})</b>
+                                        <Progress percent={practiceStatus.percent} style={{flex:1}} />
+                                    </Col>
+                                    <Col xs={24} lg={6}>
+                                        <div style={{display: "flex", alignItems: "center", height: "100%"}}>
+                                            <span>
+                                                班级排名: <b>{practiceStatus.rankString}</b>
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                        <Col xs={24} lg={12}>
+                            <Card title={<span style={{display: "flex", alignItems: "center"}}>
+                                <img src={ASSET_SIGNIN} height={18} alt="" style={{marginRight: "5px"}}/>
+                                课堂活动
+                            </span>}>
+                                <Row gutter={[16,16]}>
+                                    <Col xs={24} lg={18}>
+                                        <b>参与次数 ({activityStatus.count}/{activityStatus.total})</b>
+                                        <Progress percent={activityStatus.percent} style={{flex:1}} />
+                                    </Col>
+                                    <Col xs={24} lg={6}>
+                                        <div style={{display: "flex", alignItems: "center", height: "100%"}}>
+                                            <span>
+                                                班级排名: <b>{activityStatus.rankString}</b>
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                    </Row>
+                </Space>
+            }
         </>
     );
 }
