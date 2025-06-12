@@ -3,7 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import api from "@/api/api.jsx";
 import parseJwt from "@/utils/jwt_decode.js";
-import { thunk } from "redux-thunk";
+import CryptoJS from "crypto-js";
 
 const userStore = createSlice({
   name: "user",
@@ -19,6 +19,10 @@ const userStore = createSlice({
     checkLoginStatus(state) {
       state.isLogined = state.macKey !== "" && state.token !== "" && JSON.stringify(state.info) !== "{}";
     },
+    setOSSConfig(state, action) {
+        state.oss = action.payload;
+        localStorage.setItem("oss", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(JSON.stringify(action.payload))));
+    },
     logout(state) {
       state.isLogined = false;
       state.token = "";
@@ -32,6 +36,7 @@ const userStore = createSlice({
     token: localStorage.getItem("token") || "",
     macKey: localStorage.getItem("macKey") || "",
     info: parseJwt(localStorage.getItem("token")),
+    oss: JSON.parse(CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(localStorage.getItem("oss") ?? "e30K"))), // base64: e30K => utf8: "{}"
     isLogined: false,
   },
 });
@@ -70,5 +75,5 @@ export const switchTenant = (key) => async (dispatch) => {
     window.location.reload();
 }
 
-export const { setToken, checkLoginStatus, logout } = userStore.actions;
+export const { setToken, checkLoginStatus, setOSSConfig, logout } = userStore.actions;
 export default store;

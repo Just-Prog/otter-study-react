@@ -2,7 +2,7 @@ import { Form, Input, Tabs, Button, Card, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import userStore, {setToken} from "@/stores/user"
+import userStore, {setOSSConfig, setToken} from "@/stores/user"
 
 import CryptoJS from 'crypto-js';
 
@@ -15,14 +15,19 @@ const tokenFetch = async (xCode) => {
   let code = JSON.parse(xCode);
   let u_code = code.code;
   let uid = code.uid;
-  api.get("/uc/v1/users/token",{params: {
+  let t_resp = await api.get("/uc/v1/users/token",{params: {
     code: u_code,uid: uid
-  }}).then(_=>{
-    userStore.dispatch(setToken({
-      token: _.headers['x-token'],
-      macKey: _.headers['x-mackey']
-    }));
-  });
+  }});
+  userStore.dispatch(setToken({
+    token: t_resp.headers['x-token'],
+    macKey: t_resp.headers['x-mackey']
+  }));
+  await fetchOSSConfig();
+}
+
+const fetchOSSConfig = async () => {
+  let resp = await api.get("/tc/doc/config");
+  userStore.dispatch(setOSSConfig(resp.data));
 }
 
 const UserPasswordLoginForm = () => {
