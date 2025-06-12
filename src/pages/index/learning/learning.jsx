@@ -1,5 +1,20 @@
 import { IndexFrame } from "@/pages/index/index.jsx";
-import {Button, Card, Col, Drawer, Empty, message, Modal, Popover, Row, Space, Spin, Tabs, Input} from "antd";
+import {
+    Button,
+    Card,
+    Col,
+    Drawer,
+    Empty,
+    message,
+    Modal,
+    Popover,
+    Row,
+    Space,
+    Spin,
+    Tabs,
+    Input,
+    Popconfirm
+} from "antd";
 import {BookOutlined, CloseCircleOutlined, EyeOutlined, SearchOutlined, ToTopOutlined} from "@ant-design/icons";
 
 import {useEffect, useState} from "react";
@@ -86,7 +101,7 @@ const ClassTilesPage = () => {
     return (
         <>
             {contextHolder}
-            <ClassBigCard>
+            <Space style={{width: "100%"}} direction={"vertical"} size={"large"}>
                 <div style={{display: "flex", justifyContent: "flex-end"}}>
                     <Space>
                         { /* TODO 分页 */}
@@ -108,57 +123,68 @@ const ClassTilesPage = () => {
                         </Button>
                     </Space>
                 </div>
-                {classes.map((item, index) => <Card title={item.category}>
-                    <Row gutter={[15, 15]}>
-                        {item.classResList.map(
-                            (i, index) => <Col xs={12} lg={8}>
-                                <Card
-                                    hoverable
-                                    className="class_tiles_item"
-                                    cover={
-                                        <img
-                                            src={i.imageUrl.includes("default-cropper") ? default_cropper : i.imageUrl}
-                                            referrerPolicy={"no-referrer"}
-                                            height={"140px"}
-                                            style={{objectFit: 'cover'}}
-                                            alt={i.className}
-                                            onClick={()=>{
-                                                nav(`/class-detail/${i.id}/${i.courseId}`)
-                                            }}
-                                        />
-                                    }
-                                    actions={[
-                                        <Popover content={"置顶"}>
-                                            <ToTopOutlined onClick={() => changeTopStatus(i)}/>
-                                        </Popover>,
-                                        <Popover content={"归档"}>
-                                            <BookOutlined onClick={() => changeArchiveStatus(i)}/>
-                                        </Popover>,
-                                        <Popover content={"退课"}>
-                                            <CloseCircleOutlined onClick={() => quitClass(i)}/>
-                                        </Popover>,
-                                    ]}
-                                >
-                                    <Card.Meta
-                                        title={i.className}
-                                        description={
-                                            <div
-                                                style={{fontSize: "13px"}}
+                <ClassBigCard>
+                    {classes.map((item, index) => <Card title={item.category}>
+                        <Row gutter={[15, 15]}>
+                            {item.classResList.map(
+                                (i, index) => <Col xs={12} lg={8}>
+                                    <Card
+                                        hoverable
+                                        className="class_tiles_item"
+                                        cover={
+                                            <img
+                                                src={i.imageUrl.includes("default-cropper") ? default_cropper : i.imageUrl}
+                                                referrerPolicy={"no-referrer"}
+                                                height={"140px"}
+                                                style={{objectFit: 'cover'}}
+                                                alt={i.className}
                                                 onClick={()=>{
                                                     nav(`/class-detail/${i.id}/${i.courseId}`)
                                                 }}
-                                            >
-                                                <div>任课教师: {i.creator}</div>
-                                                <div>课程码: {i.classCode}</div>
-                                            </div>
+                                            />
                                         }
-                                    />
-                                </Card>
-                            </Col>
-                        )}
-                    </Row>
-                </Card>)}
-            </ClassBigCard>
+                                        actions={[
+                                            <Popover content={"置顶"}>
+                                                <ToTopOutlined onClick={() => changeTopStatus(i)}/>
+                                            </Popover>,
+                                            <Popover content={"归档"}>
+                                                <BookOutlined onClick={() => changeArchiveStatus(i)}/>
+                                            </Popover>,
+                                            <Popconfirm
+                                                title="操作提醒"
+                                                description="确定要退出课程吗？"
+                                                onConfirm={()=>{
+                                                    quitClass(i);
+                                                }}
+                                                onCancel={()=>{}}
+                                                okText="确认退课"
+                                                cancelText="手滑了"
+                                            >
+                                                <CloseCircleOutlined/>
+                                            </Popconfirm>,
+                                        ]}
+                                    >
+                                        <Card.Meta
+                                            title={i.className}
+                                            description={
+                                                <div
+                                                    style={{fontSize: "13px"}}
+                                                    onClick={()=>{
+                                                        nav(`/class-detail/${i.id}/${i.courseId}`)
+                                                    }}
+                                                >
+                                                    <div>任课教师: {i.creator}</div>
+                                                    <div>课程码: {i.classCode}</div>
+                                                </div>
+                                            }
+                                        />
+                                    </Card>
+                                </Col>
+                            )}
+                        </Row>
+                    </Card>)}
+                </ClassBigCard>
+            </Space>
             <Drawer title="归档管理" open={archiveVisible} onClose={() => closeArchiveDrawer()}
                     classNames="classes_archives">
                 {archiveVisible ? <ArchiveManagePage/> : null}
@@ -245,27 +271,10 @@ const ArchiveManagePage = () => {
 }
 
 const LearningIndexPage = () => {
-    const items = [
-        {
-            label: '课程',
-            key: 'classes',
-            children: <ClassTilesPage/>
-        },
-        {
-            label: '成长',
-            key: 'growing',
-            children: <ClassBigCard>
-                TODO
-            </ClassBigCard>,
-        },
-    ];
     return (
         <>
             <IndexFrame showSider={true}>
-                <Tabs
-                    defaultActiveKey="classes"
-                    items={items}
-                />
+                <ClassTilesPage/>
             </IndexFrame>
         </>
     );
