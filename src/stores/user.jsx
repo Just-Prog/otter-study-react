@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import api from "@/api/api.jsx";
 import parseJwt from "@/utils/jwt_decode.js";
 import CryptoJS from "crypto-js";
+import AESDecrypt from "@/utils/aes_decrypt.js";
 
 const userStore = createSlice({
   name: "user",
@@ -20,8 +21,24 @@ const userStore = createSlice({
       state.isLogined = state.macKey !== "" && state.token !== "" && JSON.stringify(state.info) !== "{}";
     },
     setOSSConfig(state, action) {
-        state.oss = action.payload;
-        localStorage.setItem("oss", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(JSON.stringify(action.payload))));
+        if(state.oss.enableType === "hwyun"){
+            let payload = action.payload.hwyunStorageConfigRes;
+            const uid = state.info.uid;
+            let entry = {
+                enableType: "hwyun",
+                hwyunStorageConfigRes: {
+                    accessKeyId: AESDecrypt(payload.accessKeyId, uid),
+                    accessKeySecret: AESDecrypt(payload.accessKeySecret, uid),
+                    endpoint: AESDecrypt(payload.endpoint, uid),
+                    endpointCustom: AESDecrypt(payload.endpointCustom, uid),
+                    bucketName: AESDecrypt(payload.bucketName, uid),
+                }
+            }
+            state.oss = entry;
+            localStorage.setItem("oss", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(JSON.stringify(entry))));
+        }else{
+            localStorage.setItem("oss", "e30K");
+        }
     },
     logout(state) {
       state.isLogined = false;
