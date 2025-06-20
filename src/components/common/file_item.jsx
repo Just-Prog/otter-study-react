@@ -11,7 +11,7 @@ function FileItem({imgh=20, filename = "default.bin", ext = "bin", url = ""}){
             </div>
             <div>
                 <CloudDownloadOutlined onClick={async()=>{
-                    if(url.includes("obs.goktech.cn")){
+                    if(url.includes("obs.goktech.cn") && import.meta.env.DEV){
                         url = `/obs/${url.split("https://obs.goktech.cn/")[1]}`;
                     }
                     let resp = await api.get(url,{

@@ -6,7 +6,7 @@ import userStore, { refreshToken } from "@/stores/user";
 import nonceGenerator from "@/utils/nonce_generator";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_URL,
+    baseURL: import.meta.env.DEV ? "/api/" : import.meta.env.VITE_REACT_APP_API_URL,
 });
 
 let isRefreshPending = false;
