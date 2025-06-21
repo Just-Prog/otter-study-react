@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import {Card, Col, List, Row, Space, Input, Modal, Button, Alert, Spin, Pagination} from "antd";
+import {Card, Col, List, Row, Space, Input, Modal, Button, Alert, Spin, Pagination, Upload} from "antd";
 const { TextArea } = Input;
 import api from "@/api/api";
 import FileItem from "@/components/common/file_item.jsx";
+import OBSUploader from "@/utils/obs_uploader.js";
 
 const ClassHomeworkComponent = ()=>{
     const params = useParams();
@@ -132,6 +133,18 @@ const ClassHomeworkComponent = ()=>{
                                 placeholder="请输入你的观点……"
                                 autoSize={{ minRows: 3, maxRows: 6 }}
                             />
+                            {data.correctStatu === 0
+                                ? <Upload
+                                    maxCount={1}
+                                    // showUploadList={false}
+                                    customRequest={(e)=>{
+                                        let obs = new OBSUploader;
+                                        obs.upload(e.file,);
+                                    }}
+                                >
+                                    <Button size={"small"}>上传附件</Button>
+                                </Upload>
+                                : null}
                             {stuHomeworkFile && stuHomeworkFile.length > 0
                                 ? <Card>
                                     <List

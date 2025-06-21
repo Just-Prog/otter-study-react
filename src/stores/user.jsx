@@ -27,7 +27,7 @@ const userStore = createSlice({
             let entry = {
                 enableType: "hwyun",
                 hwyunStorageConfigRes: {
-                    accessKeyId: AESDecrypt(payload.accessKeyId, uid),
+                    accessKeyId: AESDecrypt(payload.accessKeyId, uid),          // 后端传来的华为云OBS参数由AES算法加密，密钥为用户UID前16位
                     accessKeySecret: AESDecrypt(payload.accessKeySecret, uid),
                     endpoint: AESDecrypt(payload.endpoint, uid),
                     endpointCustom: AESDecrypt(payload.endpointCustom, uid),
