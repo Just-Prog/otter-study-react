@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import {Card, Col, List, Row, Space, Input, Modal, Button, Alert, Spin, Pagination, Upload} from "antd";
+import {Card, Col, List, Row, Space, Input, Modal, Button, Alert, Spin, Pagination, Upload, message} from "antd";
 const { TextArea } = Input;
 import api from "@/api/api";
 import FileItem from "@/components/common/file_item.jsx";
-import OBSUploader from "@/utils/obs_uploader.js";
+import OBSUploader, {saveDoc} from "@/utils/obs_uploader.js";
 
 const ClassHomeworkComponent = ()=>{
+    const [messageApi, contextHolder] = message.useMessage();
     const params = useParams();
     const classId = params.classId;
     const dataId = params.actId;
     const [data,setData] = useState({});
     const [submitContent, setSubmitContent] = useState("");
     const [stuHomeworkFile, setStuHomeworkFile] = useState([]);
+    const [stuUploadFile, setStuUploadFile] = useState([]);
     const [historyItems, setHistoryItems] = useState([]);
     const [historyProps, setHistoryProps] = useState({
         no: 1,
@@ -59,6 +61,20 @@ const ClassHomeworkComponent = ()=>{
         });
         setHistoryItems(resp.data.list);
     }
+    const submitStuHomework = async()=>{
+        let resp = await api.post("/tac/homeworkStudent/submitHomeWork", {
+            homeworkId: dataId,
+            groupId: null,
+            homeworkDocListReqList: stuUploadFile.map((item)=>{
+                item.docId = item.id;
+                delete(item.id);
+                return item;
+            }),
+            submitContent: submitContent,
+        });
+        messageApi.success(resp.data.message);
+        await fetchHomeWorkDet();
+    }
     useEffect(()=>{
         fetchHomeWorkDet();
     },[dataId])
@@ -69,6 +85,7 @@ const ClassHomeworkComponent = ()=>{
     }, [historyProps]);
     return (
         <>
+            {contextHolder}
             <Row gutter={[16,16]}>
                 <Col lg={12} xs={24}>
                     <Card
@@ -134,16 +151,42 @@ const ClassHomeworkComponent = ()=>{
                                 autoSize={{ minRows: 3, maxRows: 6 }}
                             />
                             {data.correctStatu === 0
-                                ? <Upload
-                                    maxCount={1}
-                                    // showUploadList={false}
-                                    customRequest={(e)=>{
-                                        let obs = new OBSUploader;
-                                        obs.upload(e.file,);
-                                    }}
-                                >
-                                    <Button size={"small"}>上传附件</Button>
-                                </Upload>
+                                ? <>
+                                    <Upload
+                                        maxCount={1}
+                                        fileList={stuUploadFile}
+                                        onChange={(e)=>{
+                                            if(e.file.status === 'done'){
+                                                setStuUploadFile([]);
+                                            }else{
+                                                setStuUploadFile(e.fileList);
+                                            }
+                                        }}
+                                        customRequest={(e)=>{
+                                            let obs = new OBSUploader;
+                                            obs.upload({
+                                                file: e.file,
+                                                onProgress: e.onProgress,
+                                                onSuccess: async(res)=>{
+                                                    let resp = await saveDoc({
+                                                        docName: e.file.name,
+                                                        pathKey: res.InterfaceResult.Key,
+                                                        size: e.file.size
+                                                    });
+                                                    setStuHomeworkFile([
+                                                        ...stuHomeworkFile,
+                                                        resp
+                                                    ])
+                                                    e.onSuccess();
+                                                },
+                                                onError: e.onError,
+                                            });
+                                        }}
+                                    >
+                                        <Button size={"small"}>上传附件</Button>
+                                    </Upload>
+                                    <Button size={"small"} type={"primary"}>提交</Button>
+                                </>
                                 : null}
                             {stuHomeworkFile && stuHomeworkFile.length > 0
                                 ? <Card>
