@@ -5,6 +5,7 @@ const { TextArea } = Input;
 import api from "@/api/api";
 import FileItem from "@/components/common/file_item.jsx";
 import OBSUploader, {saveDoc} from "@/utils/obs_uploader.js";
+import {ArrowLeftOutlined} from "@ant-design/icons";
 
 const ClassHomeworkComponent = ()=>{
     const [messageApi, contextHolder] = message.useMessage();
@@ -65,11 +66,7 @@ const ClassHomeworkComponent = ()=>{
         let resp = await api.post("/tac/homeworkStudent/submitHomeWork", {
             homeworkId: dataId,
             groupId: null,
-            homeworkDocListReqList: stuUploadFile.map((item)=>{
-                item.docId = item.id;
-                delete(item.id);
-                return item;
-            }),
+            homeworkDocListReqList: stuHomeworkFile,
             submitContent: submitContent,
         });
         messageApi.success(resp.data.message);
@@ -115,6 +112,22 @@ const ClassHomeworkComponent = ()=>{
                             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                 <div>
                                     <Space direction={"horizontal"} align={"center"}>
+                                        {data.resubmit && data.correctStatu === 0
+                                            ? <Button onClick={()=>{
+                                                let tmp = data;
+                                                let origin = tmp.resubmit;
+                                                delete(tmp.resubmit);
+                                                setData({
+                                                    ...tmp,
+                                                    correctStatu: origin,
+                                                });
+                                                setSubmitContent(data.submitContent);
+                                                setStuHomeworkFile(data.stuHomeworkDocListResList);
+                                            }}>
+                                                <ArrowLeftOutlined/>
+                                            </Button>
+                                            : null
+                                        }
                                         <span>
                                             {data.overFlag && data.activeFlag === 1 ? "补交" : "交作业"}
                                         </span>
@@ -139,7 +152,15 @@ const ClassHomeworkComponent = ()=>{
                             {data.correctStatu !== 0
                                 ? <>
                                     {data.correctStatu === 1
-                                        ? <Alert type={"info"} message={"已提交未批改"}/>
+                                        ? <Alert type={"info"} message={"已提交未批改"} action={
+                                            <Button size={"small"} type={"primary"} onClick={()=>{
+                                                setData({
+                                                    ...data,
+                                                    correctStatu: 0,
+                                                    resubmit: 1
+                                                })
+                                            }}>重新提交</Button>
+                                        }/>
                                         : <Alert type={"success"} message={`成绩: ${data?.homeworkScore}`}/>}
                                 </>
                                 : null}
@@ -173,9 +194,11 @@ const ClassHomeworkComponent = ()=>{
                                                         pathKey: res.InterfaceResult.Key,
                                                         size: e.file.size
                                                     });
+                                                    resp.data.docId = resp.data.id;
+                                                    delete(resp.data.id)
                                                     setStuHomeworkFile([
                                                         ...stuHomeworkFile,
-                                                        resp
+                                                        resp.data
                                                     ])
                                                     e.onSuccess();
                                                 },
@@ -185,7 +208,6 @@ const ClassHomeworkComponent = ()=>{
                                     >
                                         <Button size={"small"}>上传附件</Button>
                                     </Upload>
-                                    <Button size={"small"} type={"primary"}>提交</Button>
                                 </>
                                 : null}
                             {stuHomeworkFile && stuHomeworkFile.length > 0
@@ -198,6 +220,15 @@ const ClassHomeworkComponent = ()=>{
                                     />
                                 </Card>
                                 : <></>
+                            }
+                            {
+                                data.correctStatu === 0
+                                    ? <div style={{display: "flex", justifyContent: "flex-end"}}>
+                                        <Button size={"small"} type={"primary"} onClick={async()=>{
+                                            await submitStuHomework();
+                                        }}>提交</Button>
+                                    </div>
+                                    : null
                             }
                         </Space>
                     </Card>
