@@ -8,6 +8,13 @@ function YYYYMMDDHHMMSS(date) {
     return yyyy + MM + dd+  hh + mm + ss;
 }
 
+function YYYYMMDD(date){
+    var yyyy = date.getFullYear().toString();
+    var MM = pad(date.getMonth() + 1,2);
+    var dd = pad(date.getDate(), 2);
+    return yyyy + MM + dd;
+}
+
 function pad(number, length) {
     var str = '' + number;
     while (str.length < length) {
@@ -16,4 +23,4 @@ function pad(number, length) {
     return str;
 }
 
-export { YYYYMMDDHHMMSS }
+export { YYYYMMDDHHMMSS, YYYYMMDD }
