@@ -225,7 +225,9 @@ const ClassHomeworkComponent = ()=>{
                                 data.correctStatu === 0
                                     ? <div style={{display: "flex", justifyContent: "flex-end"}}>
                                         <Button size={"small"} type={"primary"} onClick={async()=>{
-                                            await submitStuHomework();
+                                            if(submitContent !== "" || stuHomeworkFile.length !== 0){
+                                                await submitStuHomework();
+                                            }
                                         }}>提交</Button>
                                     </div>
                                     : null
@@ -248,12 +250,14 @@ const ClassHomeworkComponent = ()=>{
                             renderItem={(item) => (<List.Item>
                                 <Card style={{width: "100%"}} title={`${item.name} ${formatter.format(new Date(Number.parseInt(item.submitTime)))}`}>
                                     <span>{item.submitContent}</span>
-                                    <List
-                                        dataSource={item.homeworkDocListResList}
-                                        renderItem={(item) => (
-                                            <FileItem filename={item.docName} ext={item.type} url={item.imgUrl} />
-                                        )}
-                                    />
+                                    {item.homeworkDocListResList.length > 0
+                                        ? <List
+                                            dataSource={item.homeworkDocListResList}
+                                            renderItem={(item) => (
+                                                <FileItem filename={item.docName} ext={item.type} url={item.imgUrl} />
+                                            )}
+                                        />
+                                        : null}
                                 </Card>
                             </List.Item>)}
                         />
