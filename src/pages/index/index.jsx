@@ -32,6 +32,7 @@ import {
 import TenantCarousel from "@/components/index/tenant_carousel.jsx";
 import TenantSwitcher from "@/components/index/tenant_switcher.jsx";
 import IndexThreeNews from "@/components/index/three_news.jsx";
+import PersonalInfoEditor from "@/components/index/user_info.jsx";
 import { UserLoginCard } from "@/pages/user/login.jsx";
 import { logout } from "@/stores/user.jsx";
 
@@ -40,6 +41,8 @@ function NavBarRight({ inDrawer = false }) {
   const info = useSelector((state) => state.user.info);
   const dispatch = useDispatch();
   const nav = useNavigate();
+  const [personalInfoDrawerOpened, setPersonalInfoDrawerOpened] =
+    useState(false);
   const handleClick = (e) => {
     console.log(e);
   };
@@ -113,8 +116,8 @@ function NavBarRight({ inDrawer = false }) {
   const dropdownMenuProps = {
     items: dropdownItems,
   };
-  if (isLogined)
-    if (inDrawer)
+  if (isLogined) {
+    if (inDrawer) {
       return (
         <div
           style={{
@@ -127,28 +130,36 @@ function NavBarRight({ inDrawer = false }) {
           <Menu items={dropdownItems} style={{ width: "100%" }} />
         </div>
       );
-    else
-      return (
-        <>
-          <MessageNotifyIcon style={{ marginRight: "20px" }} />
-          <Dropdown
-            arrow={true}
-            menu={dropdownMenuProps}
-            onClick={handleClick}
-            placement="bottom"
-            trigger={["click", "hover"]}
-          >
-            <Avatar
-              src={
-                <img
-                  referrerPolicy={"no-referrer"}
-                  src={info.av ?? default_avatar}
-                />
-              }
-            />
-          </Dropdown>
-        </>
-      );
+    }
+    return (
+      <>
+        <MessageNotifyIcon style={{ marginRight: "20px" }} />
+        <Dropdown
+          arrow={true}
+          menu={dropdownMenuProps}
+          onClick={handleClick}
+          placement="bottom"
+          trigger={["click", "hover"]}
+        >
+          <Avatar
+            onClick={() => setPersonalInfoDrawerOpened(true)}
+            src={
+              <img
+                referrerPolicy={"no-referrer"}
+                src={info.av ?? default_avatar}
+              />
+            }
+          />
+        </Dropdown>
+        <Drawer
+          onClose={() => setPersonalInfoDrawerOpened(false)}
+          open={personalInfoDrawerOpened}
+        >
+          <PersonalInfoEditor />
+        </Drawer>
+      </>
+    );
+  }
 
   return (
     <div
