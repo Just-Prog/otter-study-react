@@ -24,13 +24,18 @@ export default function TenantCarousel() {
     fetchCarouselData();
   }, [isLogined]);
   return (
-    <Carousel arrows autoplay={true} infinite={true}>
+    <Carousel adaptiveHeight arrows autoplay infinite>
       {data.map((item, i) => (
         <img
           alt={item.title}
+          height={"100%"}
+          key={i}
           onClick={() => onclick(i)}
           referrerPolicy="no-referrer"
           src={item.coverUrl}
+          style={{
+            objectFit: "center",
+          }}
         />
       ))}
     </Carousel>
