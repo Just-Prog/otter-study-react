@@ -14,7 +14,7 @@ function DoubleColumn(props) {
   return (
     <div className="double_column_frame">
       <Row className="double_column_content">
-        <Col md={0} lg={10}/>
+        <Col lg={10} md={0} />
         <Col style={{ flex: 1 }}>
           <RightCardMain child={props.child} />
         </Col>

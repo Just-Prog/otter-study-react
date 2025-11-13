@@ -1,17 +1,15 @@
-import {createHashRouter} from "react-router";
-
-import ErrorPage from "@/pages/error.jsx";
-
-import IndexPage from "@/pages/index/index.jsx";
-import UserLoginPage from "@/pages/user/login.jsx";
-import LearningIndexPage from "@/pages/index/learning/learning.jsx";
+import { createHashRouter } from "react-router";
+import ClassCoursewareResPage from "@/components/class/courseware.jsx";
 import ClassDetailPage, {
+  ClassActivityPage,
   ClassCourseWareActivityPage,
   ClassInfoPage,
   ClassStatisticPage,
-  ClassActivityPage,
 } from "@/pages/class/class_detail.jsx";
-import ClassCoursewareResPage from "@/components/class/courseware.jsx";
+import ErrorPage from "@/pages/error.jsx";
+import IndexPage from "@/pages/index/index.jsx";
+import LearningIndexPage from "@/pages/index/learning/learning.jsx";
+import UserLoginPage from "@/pages/user/login.jsx";
 
 const router = createHashRouter([
   {

@@ -1,66 +1,66 @@
 #layoutHeader {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
-    background-color: rgba(255,255,255,0.8);
-    backdrop-filter: blur(1.5px);
-    padding: 0 25px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(1.5px);
+  padding: 0 25px;
 }
-#layoutHeader > #layoutHeaderMain{
-    display: flex;
-    justify-content: space-between;
-    max-width: 1072px;
-    /*min-width: 360px;*/
-    width: 1072px;
-    background-color: none;
-}
-
-#layoutHeader > #layoutHeaderMain > *{
-    margin: 0 10px;
+#layoutHeader > #layoutHeaderMain {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1072px;
+  /*min-width: 360px;*/
+  width: 1072px;
+  background-color: none;
 }
 
-#layoutHeader > #layoutHeaderMain > #layoutAvatar{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#layoutHeader > #layoutHeaderMain > * {
+  margin: 0 10px;
 }
 
-#layoutHeader .ant-menu-light{
-    background: none;
+#layoutHeader > #layoutHeaderMain > #layoutAvatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#layoutHeaderMenu{
-    display: flex;
-    justify-content: flex-end;
+#layoutHeader .ant-menu-light {
+  background: none;
 }
 
-#layoutContent{
-    display: flex;
-    justify-content: center;
-    padding: 0 8px;
+#layoutHeaderMenu {
+  display: flex;
+  justify-content: flex-end;
 }
 
-#layoutContentMiddle{
-    max-width: 1048px;
-    width: 1048px;
-    min-width: 360px;
-    margin: 15px 10px;
+#layoutContent {
+  display: flex;
+  justify-content: center;
+  padding: 0 8px;
 }
 
-#layoutFooter{
-    box-shadow: 0px -2px 20px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
+#layoutContentMiddle {
+  max-width: 1048px;
+  width: 1048px;
+  min-width: 360px;
+  margin: 15px 10px;
 }
 
-.logo{
-    display: flex;
-    flex-direction: row;   /*设置主轴方向是水平方向*/
-    align-items: center;
+#layoutFooter {
+  box-shadow: 0px -2px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  display: flex;
+  flex-direction: row; /*设置主轴方向是水平方向*/
+  align-items: center;
 }
 
 .ant-layout {
@@ -70,43 +70,43 @@
 }
 
 .ant-carousel {
-    width: 100%;
+  width: 100%;
 }
 
-#layoutSider{
-    z-index: 2;
-    padding: 65px 25px;
+#layoutSider {
+  z-index: 2;
+  padding: 65px 25px;
 }
 
-#layoutSider > .ant-layout-sider-children{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#layoutSider > .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.ant-menu-vertical .ant-menu-item{
-    height: auto;
+.ant-menu-vertical .ant-menu-item {
+  height: auto;
 }
 
-.vertical_col > *{
-    margin-bottom: 15px;
+.vertical_col > * {
+  margin-bottom: 15px;
 }
 
-@media screen and (max-width: 992px){
-    #layoutSider{
-        display: none;
-        padding: 0 0;
-    }
-    #layoutAvatar{
-        display: none;
-    }
-    #layoutContentMiddle{
-        min-width: 100%;
-    }
+@media screen and (max-width: 992px) {
+  #layoutSider {
+    display: none;
+    padding: 0 0;
+  }
+  #layoutAvatar {
+    display: none;
+  }
+  #layoutContentMiddle {
+    min-width: 100%;
+  }
 }
 
-@media screen and (min-width: 992px){
-    #layoutDrawerTrigger{
-        display: none;
-    }
+@media screen and (min-width: 992px) {
+  #layoutDrawerTrigger {
+    display: none;
+  }
 }

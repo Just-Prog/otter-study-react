@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import httpProxyMiddleWare from "http-proxy-middleware";
 
 const app = express();
@@ -19,12 +19,12 @@ app.use(
         proxyRes.headers["Access-Control-Allow-Origin"] = "*";
       },
     },
-    router: (req)=>{
-      if(req.path === "?apiversion"){
+    router: (req) => {
+      if (req.path === "?apiversion") {
         return "https://obs.cn-east-2.myhuaweicloud.com";
       }
       return "https://formal-teach.obs.cn-east-2.myhuaweicloud.com";
-    }
+    },
   })
 );
 

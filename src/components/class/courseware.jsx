@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import api from "@/api/api.jsx";
 import { Button, Card, message, Space, Spin } from "antd";
-import { ClassCourseWareDataContext } from "@/pages/class/class_detail.jsx";
-import { getReadableFileSizeString } from "@/utils/file_size.js";
-import { fileExt2Icons } from "@/components/common/otter_common_define.js";
 import DPlayer from "dplayer";
 import Hls from "hls.js";
+import { useContext, useEffect, useState } from "react";
+import api from "@/api/api.jsx";
+import { fileExt2Icons } from "@/components/common/otter_common_define.js";
+import { ClassCourseWareDataContext } from "@/pages/class/class_detail.jsx";
+import { getReadableFileSizeString } from "@/utils/file_size.js";
 
 const ClassCoursewareResPage = () => {
   const context = useContext(ClassCourseWareDataContext);
@@ -32,7 +32,7 @@ const ClassCoursewareResPage = () => {
     if (typeof data?.type === "undefined" || data?.type === 12) {
       return;
     }
-    let resp = await api.get(`/tc/doc/preview/${data.docId}`);
+    const resp = await api.get(`/tc/doc/preview/${data.docId}`);
     setPreview(resp.data.pathKey);
   };
   const downloadCourseware = async () => {
@@ -40,7 +40,7 @@ const ClassCoursewareResPage = () => {
       messageApi.error("不支持");
       return;
     }
-    let a = document.createElement("a");
+    const a = document.createElement("a");
     a.href = data?.imageUrl;
     a.download = data?.name ?? `download.${data.typeStr}`;
     a.referrerPolicy = "no-referrer";
@@ -48,13 +48,13 @@ const ClassCoursewareResPage = () => {
     a.click();
   };
   const fetchVideoInfo = async () => {
-    let resp = await api.get(`/tc/vod/videoAddress/${data.videoKey}`);
+    const resp = await api.get(`/tc/vod/videoAddress/${data.videoKey}`);
     setvidInfo(resp.data);
     setIsVideoLoading(false);
     return resp.data;
   };
   const fetchVideoProgress = async () => {
-    let resp = await api.post("/tac/studentVideo/stuVideoInfo", {
+    const resp = await api.post("/tac/studentVideo/stuVideoInfo", {
       videoId: data.dataId,
       isClass: 1, // 还有不在课里的？
       joinType: 0, // 未知，暂时写死
@@ -62,7 +62,7 @@ const ClassCoursewareResPage = () => {
     return resp.data.record;
   };
   const sendVideoProgress = async (_) => {
-    let resp = await api.post("/tac/studentVideo/addStuVideo", {
+    const resp = await api.post("/tac/studentVideo/addStuVideo", {
       videoId: data.dataId,
       isClass: 1,
       joinType: 0,
@@ -90,9 +90,9 @@ const ClassCoursewareResPage = () => {
                       .replace("https://", "")
                   : r.coverAddress,
               customType: {
-                customHls: function (video, player) {
+                customHls(video, player) {
                   const hls = new Hls({});
-                  let src =
+                  const src =
                     video.src.includes("vod.goktech.cn") && import.meta.env.DEV
                       ? video.src
                           .replace("vod.goktech.cn/", "/vod/")
@@ -133,7 +133,7 @@ const ClassCoursewareResPage = () => {
         <div style={{ marginRight: 8 }}>
           <img src={fileExt2Icons(data.typeStr)} width={"40"} />
         </div>
-        <Space styles={{ item: { width: "100%" } }} style={{ width: "100%" }}>
+        <Space style={{ width: "100%" }} styles={{ item: { width: "100%" } }}>
           <div
             style={{
               display: "flex",
@@ -143,7 +143,7 @@ const ClassCoursewareResPage = () => {
               width: "100%",
             }}
           >
-            <Space direction={"vertical"} align={"start"}>
+            <Space align={"start"} direction={"vertical"}>
               <span style={{ fontSize: "18px", fontWeight: "bold" }}>
                 {data.name}
               </span>
@@ -154,7 +154,7 @@ const ClassCoursewareResPage = () => {
                 <span>文件大小: {getReadableFileSizeString(data.size)}</span>
               </div>
             </Space>
-            <Button type="primary" onClick={() => downloadCourseware()}>
+            <Button onClick={() => downloadCourseware()} type="primary">
               <span>下载</span>
             </Button>
           </div>
@@ -164,15 +164,15 @@ const ClassCoursewareResPage = () => {
         style={{ marginTop: 16, height: "65vh" }}
         styles={{ body: { height: "100%" } }}
       >
-        {data.size < 104857600 && data.type === 5 ? (
+        {data.size < 104_857_600 && data.type === 5 ? (
           <iframe
-            src={data.typeStr !== "pdf" ? preview : data.imageUrl}
-            width={"100%"}
-            height={"100%"}
-            style={{ border: "none" }}
-            referrerPolicy={"no-referrer"}
-            allowFullScreen
             allow="clipboard-read; clipboard-write"
+            allowFullScreen
+            height={"100%"}
+            referrerPolicy={"no-referrer"}
+            src={data.typeStr !== "pdf" ? preview : data.imageUrl}
+            style={{ border: "none" }}
+            width={"100%"}
           />
         ) : data.type === 12 ? (
           isVideoLoading ? (

@@ -1,16 +1,14 @@
-const AntdMenuHyperLink = ({children, onClick}) => {
-  return (
-    <>
-      <a
-        onClick={(e) => {
-          e.preventDefault;
-          onClick();
-        }}
-      >
-        <div>{children}</div>
-      </a>
-    </>
-  );
-};
+const AntdMenuHyperLink = ({ children, onClick }) => (
+  <>
+    <a
+      onClick={(e) => {
+        e.preventDefault;
+        onClick();
+      }}
+    >
+      <div>{children}</div>
+    </a>
+  </>
+);
 
-export default AntdMenuHyperLink
+export default AntdMenuHyperLink;
