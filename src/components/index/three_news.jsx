@@ -5,12 +5,12 @@ import api from "@/api/api.jsx";
 
 export default function IndexThreeNews() {
   const isLogined = useSelector((state) => state.user.isLogined);
+  const info = useSelector((state) => state.user.info);
   const [data, setData] = useState([]);
   const fetchData = async () => {
     const resp = await api.get("/tac/home-page/three-news", {
       params: {
-        exclusiveTenantId: "",
-        // TODO 租户信息挂到参数上
+        exclusiveTenantId: info.tenants[0].tenantId ?? "",
       },
     });
     setData(resp.data);

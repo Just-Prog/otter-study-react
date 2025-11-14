@@ -6,10 +6,11 @@ import api from "@/api/api.jsx";
 export default function TenantCarousel() {
   const isLogined = useSelector((state) => state.user.isLogined);
   const [data, setData] = useState([]);
+  const info = useSelector((state) => state.user.info);
   const fetchCarouselData = async () => {
     const resp = await api.get("/tac/home-page/mngCarousels", {
       params: {
-        exclusiveTenantId: "",
+        exclusiveTenantId: info?.tenants?.[0]?.tenantId ?? "",
         // TODO 租户信息挂到参数上
       },
     });

@@ -28,13 +28,15 @@ export default function IndexNewsList() {
         renderItem={(item, index) => (
           <List.Item
             extra={
-              <img
-                alt={""}
-                height={64}
-                referrerPolicy={"no-referrer"}
-                src={item.coverUrl}
-                width={128}
-              />
+              item.coverUrl !== "" && (
+                <img
+                  alt={""}
+                  height={64}
+                  referrerPolicy={"no-referrer"}
+                  src={item.coverUrl}
+                  width={128}
+                />
+              )
             }
             key={index}
             title={item.name}
