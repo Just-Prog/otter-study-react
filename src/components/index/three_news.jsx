@@ -25,7 +25,7 @@ export default function IndexThreeNews() {
         itemLayout="vertical"
         renderItem={(item, index) => (
           <List.Item
-            extra={`${new Date(Number.parseInt(item.createdTime)).getFullYear()}-${new Date(Number.parseInt(item.createdTime)).getMonth() + 1}-${new Date(Number.parseInt(item.createdTime)).getDate()}`}
+            extra={`${new Date(Number.parseInt(item.createdTime, 10)).getFullYear()}-${new Date(Number.parseInt(item.createdTime, 10)).getMonth() + 1}-${new Date(Number.parseInt(item.createdTime, 10)).getDate()}`}
             key={index}
           >
             <a href={item.content} target={"_blank"}>
